@@ -19,3 +19,41 @@ TokenType LookupIdent(const std::string& ident) {
     }
     return TokenType::IDENT;
 }
+
+std::string TokenTypeToString(TokenType type) {
+    switch (type) {
+        case TokenType::ILLEGAL:      return "ILLEGAL";
+        case TokenType::EOF_TOKEN:    return "EOF";
+        case TokenType::IDENT:        return "IDENT";
+        case TokenType::INT:          return "INT";
+        case TokenType::ASSIGN:       return "=";
+        case TokenType::PLUS:         return "+";
+        case TokenType::MINUS:        return "-";
+        case TokenType::BANG:         return "!";
+        case TokenType::ASTERISK:     return "*";
+        case TokenType::SLASH:        return "/";
+        case TokenType::LT:           return "<";
+        case TokenType::GT:           return ">";
+        case TokenType::EQ:           return "==";
+        case TokenType::NOT_EQ:       return "!=";
+        case TokenType::COMMA:        return ",";
+        case TokenType::SEMICOLON:    return ";";
+        case TokenType::LPAREN:       return "(";
+        case TokenType::RPAREN:       return ")";
+        case TokenType::LBRACE:       return "{";
+        case TokenType::RBRACE:       return "}";
+        case TokenType::FUNCTION:     return "FUNCTION";
+        case TokenType::LET:          return "LET";
+        case TokenType::TRUE:         return "TRUE";
+        case TokenType::FALSE:        return "FALSE";
+        case TokenType::IF:           return "IF";
+        case TokenType::ELSE:         return "ELSE";
+        case TokenType::RETURN:       return "RETURN";
+        default:                      return "UNKNOWN";
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const Token& token) {
+    os << TokenTypeToString(token.Type);
+    return os;
+}

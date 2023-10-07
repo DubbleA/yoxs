@@ -2,6 +2,7 @@
 #define TOKEN_H
 #include <string>
 #include <unordered_map>
+#include <iostream>
 
 enum class TokenType {
     ILLEGAL,
@@ -50,5 +51,9 @@ public:
 };
 
 TokenType LookupIdent(const std::string& ident);
+
+std::string TokenTypeToString(TokenType type);
+
+std::ostream& operator<<(std::ostream& os, const Token& token);
 
 #endif // TOKEN_H
