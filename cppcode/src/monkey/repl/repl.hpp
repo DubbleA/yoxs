@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include "monkey/lexer/lexer.hpp"
-#include "monkey/token/token.hpp"
+#include "../lexer/lexer.hpp"
+#include "../token/token.hpp"
 
 class REPL {
 public:

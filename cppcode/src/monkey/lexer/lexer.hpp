@@ -2,7 +2,7 @@
 #define LEXER_H
 
 #include <string>
-#include "monkey/token/token.hpp"
+#include "../token/token.hpp"
 
 class Lexer {
 private:
