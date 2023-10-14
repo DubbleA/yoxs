@@ -79,3 +79,81 @@ std::string Boolean::TokenLiteral() const {
 std::string Boolean::String() const {
     return token.Literal;
 }
+
+std::string IntegerLiteral::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string IntegerLiteral::String() const {
+    return token.Literal;
+}
+
+std::string PrefixExpression::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string PrefixExpression::String() const {
+    return "(" + Operator + Right->String() + ")";
+}
+
+std::string InfixExpression::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string InfixExpression::String() const {
+    return "(" + Left->String() + " " + Operator + " " + Right->String() + ")";
+}
+
+std::string IfExpression::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string IfExpression::String() const {
+    std::string result = "if" + Condition->String() + " " + Consequence->String();
+    if (Alternative) {
+        result += "else " + Alternative->String();
+    }
+    return result;
+}
+
+std::string FunctionLiteral::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string FunctionLiteral::String() const {
+    std::string result = token.Literal + "(";
+    std::vector<std::string> params;
+    for (const auto& param : Parameters) {
+        params.push_back(param->String());
+    }
+    result += join(params, ", ") + ") " + Body->String();
+    return result;
+}
+
+std::string CallExpression::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string CallExpression::String() const {
+    std::string result = Function->String() + "(";
+    std::vector<std::string> args;
+    for (const auto& arg : Arguments) {
+        args.push_back(arg->String());
+    }
+    result += join(args, ", ") + ")";
+    return result;
+}
+
+std::string join(const std::vector<std::string>& elements, const std::string& delimiter) {
+    switch (elements.size()) {
+        case 0:
+            return "";
+        case 1:
+            return elements[0];
+        default:
+            std::ostringstream os;
+            std::copy(elements.begin(), elements.end() - 1, std::ostream_iterator<std::string>(os, delimiter.c_str()));
+            os << *elements.rbegin();
+            return os.str();
+    }
+}
