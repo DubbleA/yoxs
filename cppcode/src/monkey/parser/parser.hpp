@@ -10,12 +10,12 @@
 
 enum Precedence {
     LOWEST = 1,
-    EQUALS,
-    LESSGREATER,
-    SUM,
-    PRODUCT,
-    PREFIX,
-    CALL
+    EQUALS, // ==
+    LESSGREATER, // > or <
+    SUM, // + 
+    PRODUCT, // * 
+    PREFIX, //-X or !X
+    CALL //myFunction(X)
 };
 
 extern std::unordered_map<TokenType, Precedence> precedences;
@@ -25,27 +25,33 @@ public:
     Parser(Lexer& l);
     ~Parser();
     
-    std::vector<std::string> errors;
     std::unique_ptr<Program> ParseProgram();
+    std::vector<std::string> Errors() const; 
 
 private:
     Lexer* lexer;
     Token curToken;
     Token peekToken;
+    std::vector<std::string> errors;
 
-    typedef Expression*(Parser::*prefixParseFn)();
-    typedef Expression*(Parser::*infixParseFn)(Expression*);
+    using prefixParseFn = std::function<std::unique_ptr<Expression>(void)>;
+    using infixParseFn = std::function<std::unique_ptr<Expression>(std::unique_ptr<Expression>)>;
 
     std::unordered_map<TokenType, prefixParseFn> prefixParseFns;
     std::unordered_map<TokenType, infixParseFn> infixParseFns;
 
-    void nextToken();
-    bool curTokenIs(TokenType t);
-    bool peekTokenIs(TokenType t);
-    bool expectPeek(TokenType t);
-    
     void registerPrefix(TokenType type, prefixParseFn fn);
     void registerInfix(TokenType type, infixParseFn fn);
+
+    void nextToken();
+    bool curTokenIs(TokenType t) const;
+    bool peekTokenIs(TokenType t) const;
+    bool expectPeek(TokenType t);
+    void peekError(TokenType t);
+    void noPrefixParseFnError(TokenType t);
+    int peekPrecedence() const;
+    int curPrecedence() const;
+    
 
     // Parsing functions here...
 };

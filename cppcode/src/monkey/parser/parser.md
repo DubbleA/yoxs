@@ -24,3 +24,20 @@ Programs in Monkey are a series of statements. In this example we can see three 
 let <identifier> = <expression>;
 A let statement in Monkey consists of two changing parts: an identifier and an expression. In the example above x, y and add are identifiers. 10, 15 and the function literal are expressions.
 
+
+
+10/16 
+going to make the design decision to change:
+typedef Expression*(Parser::*prefixParseFn)();
+typedef Expression*(Parser::*infixParseFn)(Expression*);
+
+to 
+
+using prefixParseFn = std::function<std::unique_ptr<Expression>(void)>;
+using infixParseFn = std::function<std::unique_ptr<Expression>(std::unique_ptr<Expression>)>;
+
+This is because I have gotten to the point in Scott Meyers Effective modern c++ book where he encourages "using alias declarations" over typedef for creating aliases. 
+
+To briefly explain, my interpretation of his reasoning is the fact that 'using' syntax is more readable, and is consistent with template type aliasing.
+
+I am not entirely sure tbh, just kinda winging it if im being honest. 
