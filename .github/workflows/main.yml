@@ -25,7 +25,7 @@ jobs:
       run: make token_test
 
     - name: Run Lexer tests
-    run: make lexer_test
+      run: make lexer_test
 
     - name: Run REPL tests
       run: make repl_test
