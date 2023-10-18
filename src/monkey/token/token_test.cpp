@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cassert>
 
+//Token Test: This tests the token construction and the function that looks up identifiers to determine if they are keywords or general identifiers.
+
 int main() {
     // Test 1: Token construction
     Token t1(TokenType::INT, "12345");

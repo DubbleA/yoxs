@@ -2,6 +2,8 @@
 #include <sstream>
 #include <cassert>
 
+//REPL Test: This tests the REPL (Read-Eval-Print Loop) functionality, ensuring it can read inputs, evaluate them, and print results as expected.
+
 int main() {
     // This stringstream will simulate the input for the REPL.
     std::stringstream input;

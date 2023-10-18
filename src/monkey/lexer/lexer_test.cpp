@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+//Lexer Test: This tests the lexer's functionality, ensuring it tokenizes a given input string correctly.
+
 int main() {
     std::string input = R"(
 let five = 5;
