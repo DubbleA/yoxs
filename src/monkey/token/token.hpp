@@ -13,11 +13,11 @@ enum class TokenType {
     INT,    // 1343456
 
     // Operators
-    ASSIGN, 
+    ASSIGN, // =
     PLUS,
     MINUS,
-    BANG,
-    ASTERISK,
+    BANG, // !
+    ASTERISK, //* 
     SLASH,
     LT,
     GT,
@@ -33,7 +33,7 @@ enum class TokenType {
     RBRACE,
 
     // Keywords
-    FUNCTION,
+    FUNCTION, //fn
     LET,
     TRUE,
     FALSE,

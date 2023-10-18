@@ -84,7 +84,7 @@ Token Lexer::NextToken() {
                 std::string literal = std::string(1, currCh) + ch;
                 tok = Token(TokenType::NOT_EQ, literal);
             } else {
-                tok = newToken(TokenType::BANG, ch);
+                tok = newToken(TokenType::BANG, ch); // (!true)
             }
             break;
         case '/':

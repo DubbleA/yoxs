@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "../token/token.hpp"
 #include <sstream> //for std::ostringstream
 
 std::unordered_map<TokenType, int> precedences = {
@@ -27,7 +28,7 @@ Parser::~Parser() {
 
 std::unique_ptr<Program> Parser::ParseProgram() {
     auto program = std::make_unique<Program>();
-    while(!curTokenIs(EOF)) {
+    while(!curTokenIs(TokenType::EOF)) {
 
     }
     return program;

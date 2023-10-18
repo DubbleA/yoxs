@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <sstream> //for std::ostringstream
 #include "../lexer/lexer.hpp"
 #include "../token/token.hpp"
 #include "../ast/ast.hpp"
