@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include <memory>
+#include <iterator>
 
 std::string Program::TokenLiteral() const {
         if(!Statements.empty()){

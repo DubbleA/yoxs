@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <memory>
+#include <iterator>
 #include "../token/token.hpp"
 
 // Forward declarations of all the classes we're going to use.
