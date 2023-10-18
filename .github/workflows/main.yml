@@ -21,14 +21,14 @@ jobs:
     - name: Build project
       run: make build
 
-    - name: Run AST tests
-      run: make ast_test
+    - name: Run Token tests
+      run: make token_test
 
     - name: Run Lexer tests
-      run: make lexer_test
+    run: make lexer_test
 
     - name: Run REPL tests
       run: make repl_test
 
-    - name: Run Token tests
-      run: make token_test
+    - name: Run AST tests
+      run: make ast_test
