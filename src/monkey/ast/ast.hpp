@@ -83,6 +83,8 @@ public:
 
 class Identifier : public Expression {
 public:
+    Identifier(const Token& t, const std::string& v);
+
     Token token; // The IDENT token
     std::string Value() const;
 

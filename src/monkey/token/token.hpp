@@ -56,4 +56,6 @@ std::string TokenTypeToString(TokenType type);
 
 std::ostream& operator<<(std::ostream& os, const Token& token);
 
+std::ostream& operator<<(std::ostream& os, const TokenType& tokenType);
+
 #endif // TOKEN_H

@@ -57,3 +57,8 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
     os << TokenTypeToString(token.Type);
     return os;
 }
+
+std::ostream& operator<<(std::ostream& os, const TokenType& tokenType) {
+    os << TokenTypeToString(tokenType);
+    return os;
+}

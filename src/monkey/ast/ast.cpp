@@ -9,7 +9,6 @@ std::string Program::TokenLiteral() const {
         }
     }
 
-
 std::string Program::String() const {
     std::stringstream out;
     for(const auto& stmt : Statements){
@@ -62,6 +61,10 @@ std::string BlockStatement::String() const {
 
 std::string Identifier::Value() const {
     return token.Literal;
+}
+
+Identifier::Identifier(const Token& t, const std::string& v) : token(t) {
+    token.Literal = v;
 }
 
 std::string Identifier::TokenLiteral() const {
