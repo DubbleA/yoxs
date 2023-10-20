@@ -126,23 +126,38 @@ int Parser::curPrecedence() const {
         return stmt;
     }
     
-    std::unique_ptr<ReturnStatement> parseReturnStatement();
-    std::unique_ptr<ExpressionStatement> parseExpressionStatement();
+    std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
+        auto stmt = std::make_unique<ReturnStatement>();
+        stmt->token = curToken;
 
-    std::unique_ptr<Expression> parseExpression(Precedence pVal);
+        nextToken();
+        stmt->ReturnValue = parseExpression(Precedence::LOWEST);
 
-    std::unique_ptr<Identifier> parseIdentifier();
-    std::unique_ptr<IntegerLiteral> parseIntegerLiteral();
+        if (peekTokenIs(TokenType::SEMICOLON)) {
+            nextToken();
+        }
 
-    std::unique_ptr<PrefixExpression> parsePrefixExpression();
-    std::unique_ptr<InfixExpression> parseInfixExpression(Expression* left);
-    std::unique_ptr<Boolean> parseBoolean();
-    std::unique_ptr<Expression> parseGroupedExpression();
-    std::unique_ptr<IfExpression> parseIfExpression();
-    std::unique_ptr<BlockStatement> parseBlockStatement();
-    std::unique_ptr<FunctionLiteral> parseFunctionLiteral();
-    std::vector<std::unique_ptr<Identifier>> parseFunctionParameters();     std::unique_ptr<CallExpression> parseCallExpression(Expression* function);
-    std::vector<std::unique_ptr<Expression>> parseCallArguments();
+        return stmt;
+    }
+
+    std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
+
+    }
+
+    std::unique_ptr<Expression>  Parser::parseExpression(Precedence pVal);
+
+    std::unique_ptr<Identifier>  Parser::parseIdentifier();
+    std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral();
+    
+    std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression();
+    std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left);
+    std::unique_ptr<Boolean>  Parser::parseBoolean();
+    std::unique_ptr<Expression>  Parser::parseGroupedExpression();
+    std::unique_ptr<IfExpression>  Parser::parseIfExpression();
+    std::unique_ptr<BlockStatement>  Parser::parseBlockStatement();
+    std::unique_ptr<FunctionLiteral>  Parser::parseFunctionLiteral();
+    std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters();     std::unique_ptr<CallExpression> parseCallExpression(Expression* function);
+    std::vector<std::unique_ptr<Expression>>  Parser::parseCallArguments();
 
 
 
