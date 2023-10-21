@@ -141,23 +141,64 @@ int Parser::curPrecedence() const {
     }
 
     std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
+        auto stmt = std::make_unique<ExpressionStatement>();
+        stmt->expr = parseExpression(Precedence::LOWEST); // check if valid
+
+        if (peekTokenIs(TokenType::SEMICOLON)){
+            nextToken();
+        }
+
+        return stmt;
+    }
+
+    std::unique_ptr<Expression>  Parser::parseExpression(Precedence pVal){
+        auto prefix = prefixParseFns[curToken.Type];
+        if(prefix == nullptr){
+            noPrefixParseFnError(curToken.Type);
+            return nullptr;
+        }
+        auto leftExp = prefix();
+
+        for(!peekTokenIs(TokenType::SEMICOLON) && pVal < peekPrecedence()){
+            //do this shit
+        }
+
+        return leftExp;
 
     }
 
-    std::unique_ptr<Expression>  Parser::parseExpression(Precedence pVal);
+    std::unique_ptr<Identifier>  Parser::parseIdentifier(){
+        return std::make_unique<Identifier> (curToken, curToken.Literal);
+    }
 
-    std::unique_ptr<Identifier>  Parser::parseIdentifier();
-    std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral();
+    std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
+        auto lit = std::make_unique<IntegerLiteral> (curToken);
+
+        //parse stuff
+    }
     
-    std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression();
-    std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left);
-    std::unique_ptr<Boolean>  Parser::parseBoolean();
-    std::unique_ptr<Expression>  Parser::parseGroupedExpression();
-    std::unique_ptr<IfExpression>  Parser::parseIfExpression();
-    std::unique_ptr<BlockStatement>  Parser::parseBlockStatement();
-    std::unique_ptr<FunctionLiteral>  Parser::parseFunctionLiteral();
-    std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters();     std::unique_ptr<CallExpression> parseCallExpression(Expression* function);
-    std::vector<std::unique_ptr<Expression>>  Parser::parseCallArguments();
+    std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
+        auto expression = std::make_unique<PrefixExpression>(curToken, curToken.Literal);
+
+        nextToken();
+
+        expression->Right = parseExpression(Precedence::PREFIX);
+
+        return expression;
+
+    }
+
+    std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left){
+        auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, left);
+        auto precedence = curPrecedence();
+
+        nextToken();
+        expression->Right = parseExpression(precedence);
+
+        return expression;
+    }
+
+    
 
 
 
