@@ -67,6 +67,8 @@ Identifier::Identifier(const Token& t, const std::string& v) : token(t) {
     token.Literal = v;
 }
 
+InfixExpression::InfixExpression(const Token& tok, const std::string& op, std::unique_ptr<Expression> leftExp) : token(tok), Operator(op), Left(std::move(leftExp)) {}
+
 std::string Identifier::TokenLiteral() const {
     return token.Literal;
 }

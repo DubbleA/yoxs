@@ -125,6 +125,8 @@ public:
 
 class InfixExpression : public Expression {
 public:
+
+    InfixExpression(const Token& tok, const std::string& op, std::unique_ptr<Expression> leftExp);
     Token token; // The operator token, e.g. +
     std::unique_ptr<Expression> Left;
     std::string Operator;

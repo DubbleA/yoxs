@@ -66,6 +66,7 @@ void Parser::noPrefixParseFnError(TokenType t) {
     errors.push_back(oss.str());
 }
 
+
 int Parser::peekPrecedence() const {
     auto it = precedences.find(peekToken.Type);
     if (it != precedences.end()) {
@@ -83,6 +84,19 @@ int Parser::curPrecedence() const {
 }
 
 // Parsing functions here...
+
+std::unique_ptr<Program> Parser::ParseProgram() {
+    auto program = std::make_unique<Program>();
+    program->Statements = std::vector<std::unique_ptr<Statement>>();
+
+    while(!curTokenIs(TokenType::EOF_TOKEN)) {
+        auto stmt = parseStatement();
+        if(stmt) program->Statements.push_back(std::move(stmt));
+        nextToken();
+    }
+
+    return program;
+}
 
 std::unique_ptr<Statement> Parser::parseStatement(){
     switch (curToken.Type)
@@ -182,7 +196,7 @@ std::unique_ptr<Identifier>  Parser::parseIdentifier(){
 }
 
 std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
-    auto lit = std::make_unique<IntegerLiteral>(curToken);
+    auto lit = std::make_unique<IntegerLiteral>();
     lit->token = curToken;
 
     try {
@@ -208,21 +222,21 @@ std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
 
 }
 
-std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left){
+std::unique_ptr<InfixExpression> Parser::parseInfixExpression (std::unique_ptr<Expression> left){
     auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, left);
     auto precedence = curPrecedence();
 
     nextToken();
-    expression->Right = parseExpression(precedence);
+    expression->Right = parseExpression(static_cast<Precedence>(precedence));
 
     return expression;
 }
 
-std::unique_ptr<Boolean>  Parser::parseBoolean(){
+std::unique_ptr<Boolean> Parser::parseBoolean(){
     return std::make_unique<Boolean> (curToken, curTokenIs(TokenType::TRUE));
 }
 
-std::unique_ptr<Expression>  Parser::parseGroupedExpression(){
+std::unique_ptr<Expression> Parser::parseGroupedExpression(){
     nextToken();
 
     auto exp = parseExpression(Precedence::LOWEST);
@@ -269,13 +283,17 @@ std::unique_ptr<IfExpression>  Parser::parseIfExpression() {
 
 std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
     auto block = std::make_unique<BlockStatement>(curToken);
-    block->Statements = new std::vector<std::unique_ptr<Statement>>; //todo
 
     nextToken();
 
-    for(){
-        //todo
+    while (!curTokenIs(TokenType::RBRACE) && !curTokenIs(TokenType::EOF_TOKEN)) {
+        auto stmt = parseStatement();
+        if (stmt) {
+            block->Statements.push_back(std::move(stmt));
+        }
+        nextToken();
     }
+
     return block;
 }
 
@@ -297,7 +315,7 @@ std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
     return lit;
 }
 std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
-    auto identifiers = std::make_unique<Identifier>(); // wrong
+    std::vector<std::unique_ptr<Identifier>> identifiers;
 
     if(peekTokenIs(TokenType::RPAREN)) {
         nextToken();
@@ -307,52 +325,59 @@ std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
     nextToken();
 
     auto ident = std::make_unique<Identifier>(curToken, curToken.Literal);
+    identifiers.push_back(std::move(ident));
+
+    while (peekTokenIs(TokenType::COMMA)){
+        nextToken();  // Consume the COMMA
+        nextToken();  // Move to the next token after the COMMA
+        ident = std::make_unique<Identifier>(curToken, curToken.Literal);
+        identifiers.push_back(std::move(ident));
+    }
+
+    if (!expectPeek(TokenType::RPAREN)) {
+        // in C++ we can't return nullptr for a vector.
+        // For now, I'll clear the vector and return it, indicating an error.
+        identifiers.clear();
+        return identifiers;
+    }
+
+    return identifiers;
+
 
 }
-std::unique_ptr<CallExpression> Parser::parseCallExpression(Expression* function){
+
+std::unique_ptr<CallExpression> Parser::parseCallExpression(std::unique_ptr<Expression> function){
     auto exp = std::make_unique<CallExpression>(curToken, function);
     exp->Arguments = parseCallArguments();
     return exp;
 }
+
 std::vector<std::unique_ptr<Expression>> Parser::parseCallArguments(){
-    std::vector<std::unique_ptr<Expression>> args; //could be wrong
+    std::vector<std::unique_ptr<Expression>> args;
 
     if(peekTokenIs(TokenType::RPAREN)) {
         nextToken();
         return args;
     }
 
+    nextToken();
+    args.push_back(parseExpression(Precedence::LOWEST));
+
     while(peekTokenIs(TokenType::COMMA)){  //todo check this
-        nextToken();
-        nextToken();
-        //append todo
+        nextToken(); // consume the COMMA
+        nextToken(); // move to the next token after the COMMA
+        args.push_back(parseExpression(Precedence::LOWEST));
     }
 
     if(!expectPeek(TokenType::RPAREN)){
-        return; // check if void null return is okay
+        // Return an empty vector to indicate an error or unexpected input
+        args.clear();
+        return args;
     }
 
     return args;
 }
 
-
-Parser::~Parser() {
-    // Any cleanup if required...
-}
-
 std::vector<std::string> Parser::Errors() const {
     return errors; 
-}
-
-std::unique_ptr<Program> Parser::ParseProgram() {
-    auto program = std::make_unique<Program>();
-    program->Statements = std::vector<std::unique_ptr<Statement>>();
-
-    while(!curTokenIs(TokenType::EOF_TOKEN)) {
-        auto stmt = parseStatement();
-        if(stmt) program->Statements.push_back(std::move(stmt));
-        nextToken();
-    }
-
-    return program;
 }

@@ -26,7 +26,6 @@ extern std::unordered_map<TokenType, Precedence> precedences;
 class Parser {
 public:
     Parser(Lexer& l);
-    ~Parser();
 
     std::vector<std::string> Errors() const; 
     std::unique_ptr<Program> ParseProgram();
@@ -69,13 +68,14 @@ private:
     std::unique_ptr<IntegerLiteral> parseIntegerLiteral();
 
     std::unique_ptr<PrefixExpression> parsePrefixExpression();
-    std::unique_ptr<InfixExpression> parseInfixExpression(Expression* left);
+    std::unique_ptr<InfixExpression> parseInfixExpression(std::unique_ptr<Expression> left);
     std::unique_ptr<Boolean> parseBoolean();
     std::unique_ptr<Expression> parseGroupedExpression();
     std::unique_ptr<IfExpression> parseIfExpression();
     std::unique_ptr<BlockStatement> parseBlockStatement();
     std::unique_ptr<FunctionLiteral> parseFunctionLiteral();
-    std::vector<std::unique_ptr<Identifier>> parseFunctionParameters();     std::unique_ptr<CallExpression> parseCallExpression(Expression* function);
+    std::vector<std::unique_ptr<Identifier>> parseFunctionParameters();     
+    std::unique_ptr<CallExpression> parseCallExpression(std::unique_ptr<Expression> function);
     std::vector<std::unique_ptr<Expression>> parseCallArguments();
 
 };
