@@ -19,9 +19,8 @@ Parser::Parser(Lexer& l) : lexer(&l) {
     nextToken();
 
     // Register prefix and infix functions...
-    // Note: You need to translate each parse function from Go and then register here.
-    // E.g., registerPrefix(TokenType::IDENT, &Parser::parseIdentifier);
-    // TODO: Other initializations
+    registerPrefix(TokenType::IDENT, &Parser::parseIdentifier);
+    
 }
 
 void Parser::registerPrefix(TokenType type, prefixParseFn fn) {
@@ -72,7 +71,7 @@ int Parser::peekPrecedence() const {
     if (it != precedences.end()) {
         return it->second;
     }
-    return LOWEST;
+    return Precedence::LOWEST;
 }
 
 int Parser::curPrecedence() const {
@@ -80,241 +79,261 @@ int Parser::curPrecedence() const {
     if (it != precedences.end()) {
         return it->second;
     }
-    return LOWEST;
+    return Precedence::LOWEST;
 }
 
 // Parsing functions here...
 
-    std::unique_ptr<Statement> Parser::parseStatement(){
-        switch (curToken.Type)
-        {
-        case TokenType::LET:
-            return parseLetStatement();
-            break;
-        
-        case TokenType::RETURN:
-            return parseReturnStatement();
-            break;
-        
-        default: //expression statement
-            return parseExpressionStatement();
-            break;
-        }
-    }
-
-    std::unique_ptr<LetStatement> Parser::parseLetStatement() {
-        auto stmt = std::make_unique<LetStatement>();
-        stmt->token = curToken;
-
-        if (!expectPeek(TokenType::IDENT)) {
-            return nullptr;
-        }
-
-        stmt->Name = std::make_unique<Identifier> (curToken, curToken.Literal); 
-
-        if(!expectPeek(TokenType::ASSIGN)) {
-            return nullptr;
-        }
-
-        nextToken();
-        stmt->Value = parseExpression(Precedence::LOWEST);
-
-        if(peekTokenIs(TokenType::SEMICOLON)){
-            nextToken();
-        }
-
-        return stmt;
-    }
+std::unique_ptr<Statement> Parser::parseStatement(){
+    switch (curToken.Type)
+    {
+    case TokenType::LET:
+        return parseLetStatement();
+        break;
     
-    std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
-        auto stmt = std::make_unique<ReturnStatement>();
-        stmt->token = curToken;
-
-        nextToken();
-        stmt->ReturnValue = parseExpression(Precedence::LOWEST);
-
-        if (peekTokenIs(TokenType::SEMICOLON)) {
-            nextToken();
-        }
-
-        return stmt;
-    }
-
-    std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
-        auto stmt = std::make_unique<ExpressionStatement>();
-        stmt->expr = parseExpression(Precedence::LOWEST); // check if valid
-
-        if (peekTokenIs(TokenType::SEMICOLON)){
-            nextToken();
-        }
-
-        return stmt;
-    }
-
-    std::unique_ptr<Expression>  Parser::parseExpression(Precedence pVal){
-        auto prefix = prefixParseFns[curToken.Type];
-        if(prefix == nullptr){
-            noPrefixParseFnError(curToken.Type);
-            return nullptr;
-        }
-        auto leftExp = prefix();
-
-        for(!peekTokenIs(TokenType::SEMICOLON) && pVal < peekPrecedence()){
-            //do this shit
-        }
-
-        return leftExp;
-
-    }
-
-    std::unique_ptr<Identifier>  Parser::parseIdentifier(){
-        return std::make_unique<Identifier> (curToken, curToken.Literal);
-    }
-
-    std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
-        auto lit = std::make_unique<IntegerLiteral> (curToken);
-
-        //parse stuff
-    }
+    case TokenType::RETURN:
+        return parseReturnStatement();
+        break;
     
-    std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
-        auto expression = std::make_unique<PrefixExpression>(curToken, curToken.Literal);
+    default: //expression statement
+        return parseExpressionStatement();
+        break;
+    }
+}
 
+std::unique_ptr<LetStatement> Parser::parseLetStatement() {
+    auto stmt = std::make_unique<LetStatement>();
+    stmt->token = curToken;
+
+    if (!expectPeek(TokenType::IDENT)) {
+        return nullptr;
+    }
+
+    stmt->Name = std::make_unique<Identifier> (curToken, curToken.Literal); 
+
+    if(!expectPeek(TokenType::ASSIGN)) {
+        return nullptr;
+    }
+
+    nextToken();
+    stmt->Value = parseExpression(Precedence::LOWEST);
+
+    if(peekTokenIs(TokenType::SEMICOLON)){
+        nextToken();
+    }
+
+    return stmt;
+}
+
+std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
+    auto stmt = std::make_unique<ReturnStatement>();
+    stmt->token = curToken;
+
+    nextToken();
+    stmt->ReturnValue = parseExpression(Precedence::LOWEST);
+
+    if (peekTokenIs(TokenType::SEMICOLON)) {
+        nextToken();
+    }
+
+    return stmt;
+}
+
+std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
+    auto stmt = std::make_unique<ExpressionStatement>();
+    stmt->expr = parseExpression(Precedence::LOWEST); // check if valid
+
+    if (peekTokenIs(TokenType::SEMICOLON)){
+        nextToken();
+    }
+
+    return stmt;
+}
+
+std::unique_ptr<Expression> Parser::parseExpression(Precedence pVal){
+    auto prefixIt = prefixParseFns.find(curToken.Type);
+    if (prefixIt == prefixParseFns.end()) {
+        noPrefixParseFnError(curToken.Type);
+        return nullptr;
+    }
+    auto prefix = prefixIt->second;
+    std::unique_ptr<Expression> leftExp = (prefix)();
+    //here we are calling prefix like a function and the parentheses after prefix 
+    //are invoking the callable object. if prefix is a lambda or std::function
+    //wrapping a lambda it will invoke the lambdas code. 
+    //The result is stored in leftExp
+
+    while(!peekTokenIs(TokenType::SEMICOLON) && pVal < peekPrecedence()) {
+        auto infixIt = infixParseFns.find(peekToken.Type);
+        if (infixIt == infixParseFns.end()) return leftExp;
         nextToken();
 
-        expression->Right = parseExpression(Precedence::PREFIX);
-
-        return expression;
-
+        auto infix = infixIt->second;
+        leftExp = (infix)(std::move(leftExp));
+        //std::move is used to transfer the ownership of the std::unique_ptr to the function
     }
 
-    std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left){
-        auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, left);
-        auto precedence = curPrecedence();
+    return leftExp;
 
+}
+
+std::unique_ptr<Identifier>  Parser::parseIdentifier(){
+    return std::make_unique<Identifier> (curToken, curToken.Literal);
+}
+
+std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
+    auto lit = std::make_unique<IntegerLiteral>(curToken);
+    lit->token = curToken;
+
+    try {
+        //stoi can throw an exception if conversion fails
+        lit->Value = std::stoll(curToken.Literal);
+    } catch (const std::exception& e){
+        std::string msg = "could not parse \"" + curToken.Literal + "\" as integer";
+        errors.push_back(msg);
+        return nullptr;
+    }
+
+    return lit;
+}
+
+std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
+    auto expression = std::make_unique<PrefixExpression>(curToken, curToken.Literal);
+
+    nextToken();
+
+    expression->Right = parseExpression(Precedence::PREFIX);
+
+    return expression;
+
+}
+
+std::unique_ptr<InfixExpression>  Parser::parseInfixExpression(Expression* left){
+    auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, left);
+    auto precedence = curPrecedence();
+
+    nextToken();
+    expression->Right = parseExpression(precedence);
+
+    return expression;
+}
+
+std::unique_ptr<Boolean>  Parser::parseBoolean(){
+    return std::make_unique<Boolean> (curToken, curTokenIs(TokenType::TRUE));
+}
+
+std::unique_ptr<Expression>  Parser::parseGroupedExpression(){
+    nextToken();
+
+    auto exp = parseExpression(Precedence::LOWEST);
+
+    if(!expectPeek(TokenType::RPAREN)) {
+        return nullptr;
+    }
+
+    return exp;
+}
+
+std::unique_ptr<IfExpression>  Parser::parseIfExpression() {
+    auto expression = std::make_unique<IfExpression>(curToken);
+
+    if(!expectPeek(TokenType::LPAREN)) {
+        return nullptr;
+    }
+
+    nextToken();
+    expression->Condition = parseExpression(Precedence::LOWEST);
+
+    if(!expectPeek(TokenType::RPAREN)) {
+        return nullptr;
+    }
+
+    if(!expectPeek(TokenType::LBRACE)){
+        return nullptr;
+    }
+
+    expression->Consequence = parseBlockStatement();
+
+    if(peekTokenIs(TokenType::ELSE)) {
         nextToken();
-        expression->Right = parseExpression(precedence);
-
-        return expression;
-    }
-
-    std::unique_ptr<Boolean>  Parser::parseBoolean(){
-        return std::make_unique<Boolean> (curToken, curTokenIs(TokenType::TRUE));
-    }
-
-    std::unique_ptr<Expression>  Parser::parseGroupedExpression(){
-        nextToken();
-
-        auto exp = parseExpression(Precedence::LOWEST);
-
-        if(!expectPeek(TokenType::RPAREN)) {
-            return nullptr;
-        }
-
-        return exp;
-    }
-
-    std::unique_ptr<IfExpression>  Parser::parseIfExpression() {
-        auto expression = std::make_unique<IfExpression>(curToken);
-
-        if(!expectPeek(TokenType::LPAREN)) {
-            return nullptr;
-        }
-
-        nextToken();
-        expression->Condition = parseExpression(Precedence::LOWEST);
-
-        if(!expectPeek(TokenType::RPAREN)) {
-            return nullptr;
-        }
-
-        if(!expectPeek(TokenType::LBRACE)){
-            return nullptr;
-        }
-
-        expression->Consequence = parseBlockStatement();
-
-        if(peekTokenIs(TokenType::ELSE)) {
-            nextToken();
-
-            if(!expectPeek(TokenType::LBRACE)) {
-                return nullptr;
-            }
-
-            expression->Alternative = parseBlockStatement();
-        }
-
-        return expression;
-    }
-
-    std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
-        auto block = std::make_unique<BlockStatement>(curToken);
-        block->Statements = new std::vector<std::unique_ptr<Statement>>; //todo
-
-        nextToken();
-
-        for(){
-            //todo
-        }
-        return block;
-    }
-
-    std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
-        auto lit = std::make_unique<FunctionLiteral>(curToken);
-
-        if(expectPeek(TokenType::LPAREN)) {
-            return nullptr;
-        }
-
-        lit->Parameters = parseFunctionParameters();
 
         if(!expectPeek(TokenType::LBRACE)) {
             return nullptr;
         }
 
-        lit->Body = parseBlockStatement();
-
-        return lit;
+        expression->Alternative = parseBlockStatement();
     }
-    std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
-        auto identifiers = std::make_unique<Identifier>(); // wrong
 
-        if(peekTokenIs(TokenType::RPAREN)) {
-            nextToken();
-            return identifiers;
-        }
+    return expression;
+}
 
+std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
+    auto block = std::make_unique<BlockStatement>(curToken);
+    block->Statements = new std::vector<std::unique_ptr<Statement>>; //todo
+
+    nextToken();
+
+    for(){
+        //todo
+    }
+    return block;
+}
+
+std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
+    auto lit = std::make_unique<FunctionLiteral>(curToken);
+
+    if(expectPeek(TokenType::LPAREN)) {
+        return nullptr;
+    }
+
+    lit->Parameters = parseFunctionParameters();
+
+    if(!expectPeek(TokenType::LBRACE)) {
+        return nullptr;
+    }
+
+    lit->Body = parseBlockStatement();
+
+    return lit;
+}
+std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
+    auto identifiers = std::make_unique<Identifier>(); // wrong
+
+    if(peekTokenIs(TokenType::RPAREN)) {
         nextToken();
-
-        auto ident = std::make_unique<Identifier>(curToken, curToken.Literal);
-
+        return identifiers;
     }
-    std::unique_ptr<CallExpression> Parser::parseCallExpression(Expression* function){
-        auto exp = std::make_unique<CallExpression>(curToken, function);
-        exp->Arguments = parseCallArguments();
-        return exp;
-    }
-    std::vector<std::unique_ptr<Expression>> Parser::parseCallArguments(){
-        std::vector<std::unique_ptr<Expression>> args; //could be wrong
 
-        if(peekTokenIs(TokenType::RPAREN)) {
-            nextToken();
-            return args;
-        }
+    nextToken();
 
-        while(peekTokenIs(TokenType::COMMA)){  //todo check this
-            nextToken();
-            nextToken();
-            //append todo
-        }
+    auto ident = std::make_unique<Identifier>(curToken, curToken.Literal);
 
-        if(!expectPeek(TokenType::RPAREN)){
-            return; // check if void null return is okay
-        }
+}
+std::unique_ptr<CallExpression> Parser::parseCallExpression(Expression* function){
+    auto exp = std::make_unique<CallExpression>(curToken, function);
+    exp->Arguments = parseCallArguments();
+    return exp;
+}
+std::vector<std::unique_ptr<Expression>> Parser::parseCallArguments(){
+    std::vector<std::unique_ptr<Expression>> args; //could be wrong
 
+    if(peekTokenIs(TokenType::RPAREN)) {
+        nextToken();
         return args;
     }
 
+    while(peekTokenIs(TokenType::COMMA)){  //todo check this
+        nextToken();
+        nextToken();
+        //append todo
+    }
+
+    if(!expectPeek(TokenType::RPAREN)){
+        return; // check if void null return is okay
+    }
+
+    return args;
+}
 
 
 Parser::~Parser() {
@@ -327,8 +346,13 @@ std::vector<std::string> Parser::Errors() const {
 
 std::unique_ptr<Program> Parser::ParseProgram() {
     auto program = std::make_unique<Program>();
+    program->Statements = std::vector<std::unique_ptr<Statement>>();
+
     while(!curTokenIs(TokenType::EOF_TOKEN)) {
-        //todo
+        auto stmt = parseStatement();
+        if(stmt) program->Statements.push_back(std::move(stmt));
+        nextToken();
     }
+
     return program;
 }
