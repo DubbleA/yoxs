@@ -14,14 +14,73 @@ std::unordered_map<TokenType, int> precedences = {
 };
 
 Parser::Parser(Lexer& l) : lexer(&l) {
-    // Initialization code here...
-    nextToken();
-    nextToken();
+    // Initialize errors
+    errors = std::vector<std::string>();
 
-    // Register prefix and infix functions...
-    registerPrefix(TokenType::IDENT, &Parser::parseIdentifier);
-    
+
+    // Register prefix functions using lambda functions for explicit casting
+    registerPrefix(TokenType::IDENT, [this]() -> std::unique_ptr<Expression> {
+        return this->parseIdentifier();
+    });
+    registerPrefix(TokenType::INT, [this]() -> std::unique_ptr<Expression> {
+        return this->parseIntegerLiteral();
+    });
+    registerPrefix(TokenType::BANG, [this]() -> std::unique_ptr<Expression> {
+        return this->parsePrefixExpression();
+    });
+    registerPrefix(TokenType::MINUS, [this]() -> std::unique_ptr<Expression> {
+        return this->parsePrefixExpression();
+    });
+    registerPrefix(TokenType::TRUE, [this]() -> std::unique_ptr<Expression> {
+        return this->parseBoolean();
+    });
+    registerPrefix(TokenType::FALSE, [this]() -> std::unique_ptr<Expression> {
+        return this->parseBoolean();
+    });
+    registerPrefix(TokenType::LPAREN, [this]() -> std::unique_ptr<Expression> {
+        return this->parseGroupedExpression();
+    });
+    registerPrefix(TokenType::IF, [this]() -> std::unique_ptr<Expression> {
+        return this->parseIfExpression();
+    });
+    registerPrefix(TokenType::FUNCTION, [this]() -> std::unique_ptr<Expression> {
+        return this->parseFunctionLiteral();
+    });
+
+    // Register infix functions using lambda functions for explicit casting
+    registerInfix(TokenType::PLUS, [this](std::unique_ptr<Expression> left) -> std::unique_ptr<Expression> {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::MINUS, [this](std::unique_ptr<Expression> left) -> std::unique_ptr<Expression> {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::SLASH, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::ASTERISK, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::EQ, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::NOT_EQ, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::LT, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::GT, [this](std::unique_ptr<Expression> left) {
+        return this->parseInfixExpression(std::move(left));
+    });
+    registerInfix(TokenType::LPAREN, [this](std::unique_ptr<Expression> function) {
+        return this->parseCallExpression(std::move(function));
+    });
+
+    // Read two tokens for initialization
+    nextToken();
+    nextToken();
 }
+
 
 void Parser::registerPrefix(TokenType type, prefixParseFn fn) {
     prefixParseFns[type] = fn;

@@ -53,7 +53,6 @@ private:
     void noPrefixParseFnError(TokenType t);
     int peekPrecedence() const;
     int curPrecedence() const;
-    
 
     // Parsing functions here...
 
