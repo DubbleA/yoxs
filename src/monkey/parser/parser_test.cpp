@@ -464,13 +464,199 @@ void TestIfExpression() {
     }
 }
 
+void TestFunctionLiteralParsing() {
+    std::string input = "fn(x, y) { x + y; }";
 
+    Lexer l(input);
+    Parser p(l);
+    std::unique_ptr<Program> program = p.ParseProgram();
+    checkParserErrors(p);
 
-bool testLiteralExpression(const Expression& expr, const std::variant<int, bool, std::string>& expected) {
-    // Use our ValueVisitor from earlier to check the expression against the expected value.
-    return std::visit(ValueVisitor(expr), expected);
+    if (program->Statements.size() != 1) {
+        std::cerr << "program.Statements does not contain 1 statements. got=" 
+                  << program->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    if (!exprStmt) {
+        std::cerr << "program.Statements[0] is not ExpressionStatement. Got " 
+                  << typeid(*program->Statements[0]).name() << std::endl;
+        return;
+    }
+
+    auto* function = dynamic_cast<FunctionLiteral*>(exprStmt->expr.get());
+    if (!function) {
+        std::cerr << "stmt.Expression is not FunctionLiteral. Got "
+                  << typeid(*exprStmt->expr).name() << std::endl;
+        return;
+    }
+
+    if (function->Parameters.size() != 2) {
+        std::cerr << "function literal parameters wrong. want 2, got="
+                  << function->Parameters.size() << std::endl;
+        return;
+    }
+
+    testLiteralExpression(function->Parameters[0].get(), "x");
+    testLiteralExpression(function->Parameters[1].get(), "y");
+
+    if (function->Body->Statements.size() != 1) {
+        std::cerr << "function.Body.Statements has not 1 statements. got=" 
+                  << function->Body->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* bodyStmt = dynamic_cast<ExpressionStatement*>(function->Body->Statements[0].get());
+    if (!bodyStmt) {
+        std::cerr << "function body stmt is not ExpressionStatement. Got "
+                  << typeid(*function->Body->Statements[0]).name() << std::endl;
+        return;
+    }
+
+    testInfixExpression(bodyStmt->expr.get(), "x", "+", "y");
 }
 
+void TestFunctionParameterParsing() {
+    struct Test {
+        std::string input;
+        std::vector<std::string> expectedParams;
+    };
+
+    std::vector<Test> tests = {
+        {"fn() {};", {}},
+        {"fn(x) {};", {"x"}},
+        {"fn(x, y, z) {};", {"x", "y", "z"}}
+    };
+
+    for (const auto& tt : tests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        std::unique_ptr<Program> program = p.ParseProgram();
+        checkParserErrors(p); // Assuming this function is modified for C++
+
+        auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+        if (!stmt) {
+            std::cerr << "Statement is not ExpressionStatement." << std::endl;
+            return;
+        }
+
+        auto* function = dynamic_cast<FunctionLiteral*>(stmt->expr.get());
+        if (!function) {
+            std::cerr << "Expression is not FunctionLiteral." << std::endl;
+            return;
+        }
+
+        if (function->Parameters.size() != tt.expectedParams.size()) {
+            std::cerr << "length parameters wrong. want " 
+                      << tt.expectedParams.size() 
+                      << ", got=" << function->Parameters.size() << std::endl;
+        }
+
+        for (size_t i = 0; i < tt.expectedParams.size(); ++i) {
+            testLiteralExpression(function->Parameters[i].get(), tt.expectedParams[i]);
+        }
+    }
+}
+
+#include <iostream>
+#include <memory>
+
+// Assuming necessary header files for your parser classes are included
+
+void TestCallExpressionParsing() {
+    std::string input = "add(1, 2 * 3, 4 + 5);";
+
+    Lexer l(input);
+    Parser p(l);
+    std::unique_ptr<Program> program = p.ParseProgram();
+    checkParserErrors(p); // Assuming this function is modified for C++
+
+    if (program->Statements.size() != 1) {
+        std::cerr << "program.Statements does not contain " << 1 
+                  << " statements. got=" << program->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    if (!stmt) {
+        std::cerr << "stmt is not ExpressionStatement. got=" 
+                  << typeid(program->Statements[0].get()).name() << std::endl;
+        return;
+    }
+
+    auto* exp = dynamic_cast<CallExpression*>(stmt->expr.get());
+    if (!exp) {
+        std::cerr << "stmt.Expression is not CallExpression. got=" 
+                  << typeid(stmt->expr.get()).name() << std::endl;
+        return;
+    }
+
+    if (!testIdentifier(exp->Function.get(), "add")) {
+        return;
+    }
+
+    if (exp->Arguments.size() != 3) {
+        std::cerr << "wrong length of arguments. got=" << exp->Arguments.size() << std::endl;
+        return;
+    }
+
+    testLiteralExpression(exp->Arguments[0].get(), 1);
+    testInfixExpression(exp->Arguments[1].get(), 2, "*", 3);
+    testInfixExpression(exp->Arguments[2].get(), 4, "+", 5);
+}
+
+void TestCallExpressionParameterParsing() {
+    struct TestCase {
+        std::string input;
+        std::string expectedIdent;
+        std::vector<std::string> expectedArgs;
+    };
+
+    std::vector<TestCase> tests = {
+        {"add();", "add", {}},
+        {"add(1);", "add", {"1"}},
+        {"add(1, 2 * 3, 4 + 5);", "add", {"1", "(2 * 3)", "(4 + 5)"}}
+    };
+
+    for (const auto& tt : tests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        std::unique_ptr<Program> program = p.ParseProgram();
+        checkParserErrors(p); // Assuming this function is adapted for C++
+
+        auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+        if (!stmt) {
+            std::cerr << "First statement is not an ExpressionStatement. got=" 
+                      << typeid(program->Statements[0].get()).name() << std::endl;
+            return;
+        }
+
+        auto* exp = dynamic_cast<CallExpression*>(stmt->expr.get());
+        if (!exp) {
+            std::cerr << "stmt.Expression is not CallExpression. got=" 
+                      << typeid(stmt->expr.get()).name() << std::endl;
+            return;
+        }
+
+        if (!testIdentifier(exp->Function.get(), tt.expectedIdent)) {
+            return;
+        }
+
+        if (exp->Arguments.size() != tt.expectedArgs.size()) {
+            std::cerr << "wrong number of arguments. want=" << tt.expectedArgs.size() 
+                      << ", got=" << exp->Arguments.size() << std::endl;
+            return;
+        }
+
+        for (size_t i = 0; i < tt.expectedArgs.size(); ++i) {
+            if (exp->Arguments[i]->String() != tt.expectedArgs[i]) {
+                std::cerr << "argument " << i << " wrong. want=" << tt.expectedArgs[i] 
+                          << ", got=" << exp->Arguments[i]->String() << std::endl;
+            }
+        }
+    }
+}
 
 void checkParserErrors(const Parser& p) {
     const auto& errors = p.Errors();
@@ -491,39 +677,6 @@ bool testLetStatement(const std::unique_ptr<Statement>& stmt, const std::string&
     assert(letStmt->Name->TokenLiteral() == expectedName);
     return true;
 }
-
-// ... other helper functions for testing ...
-
-void TestLetStatements() {
-    struct TestCase {
-        std::string input;
-        std::string expectedIdentifier;
-        std::variant<int, bool, std::string> expectedValue; // Assumes all expected values are int or bool or string.
-    };
-
-    std::vector<TestCase> tests = {
-        {"let x = 5;", "x", 5},
-        {"let y = true;", "y", true},
-        {"let foobar = y;", "foobar", "y"}
-    };
-
-    for (const auto& tt : tests) {
-        Lexer l(tt.input);
-        Parser p(l);
-        auto program = p.ParseProgram();
-        checkParserErrors(p);
-
-        assert(program->Statements.size() == 1);
-
-        if (!testLetStatement(program->Statements[0], tt.expectedIdentifier)) {
-            return;
-        }
-
-        // ... Value testing code, similar to the Go version ...
-    }
-}
-
-// ... other test functions similar to the above ...
 
 int main() {
     TestLetStatements();

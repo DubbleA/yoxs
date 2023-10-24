@@ -359,7 +359,7 @@ std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
 std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
     auto lit = std::make_unique<FunctionLiteral>(curToken);
 
-    if(expectPeek(TokenType::LPAREN)) {
+    if(!expectPeek(TokenType::LPAREN)) {
         return nullptr;
     }
 
