@@ -35,14 +35,14 @@ void TestLetStatements() {
             return;
         }
 
-        // Here, we'll directly get the value from the statement and test it.
-        const Expression& value = *dynamic_cast<LetStatement*>(program->Statements[0].get())->Value;
+        // Safely extract the value from the LetStatement
+        auto letStmtPtr = dynamic_cast<LetStatement*>(program->Statements[0].get());
+        if (!letStmtPtr) {
+            std::cerr << "Statement is not a LetStatement. Got " << typeid(program->Statements[0].get()).name() << std::endl;
+            return;
+        }
 
-        // if(auto *ptr = dynamic_cast<LetStatement*>(program->Statements[0].get())){
-        // //use ptr
-        // }
-
-        #TODO FIX THE ABOVE
+        const Expression& value = *letStmtPtr->Value;
         if (!testLiteralExpression(value, tt.expectedValue)) {
             return;
         }
@@ -559,11 +559,6 @@ void TestFunctionParameterParsing() {
     }
 }
 
-#include <iostream>
-#include <memory>
-
-// Assuming necessary header files for your parser classes are included
-
 void TestCallExpressionParsing() {
     std::string input = "add(1, 2 * 3, 4 + 5);";
 
@@ -658,29 +653,132 @@ void TestCallExpressionParameterParsing() {
     }
 }
 
+bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& name) {
+    if (s->TokenLiteral() != "let") {
+        std::cerr << "s.TokenLiteral not 'let'. got=" << s->TokenLiteral() << std::endl;
+        return false;
+    }
+
+    const LetStatement* letStmt = dynamic_cast<LetStatement*>(s.get());
+    if (!letStmt) {
+        std::cerr << "s not LetStatement. got=" << typeid(*s).name() << std::endl;
+        return false;
+    }
+
+    if (letStmt->Name.Value != name) {
+        std::cerr << "letStmt.Name.Value not '" << name << "'. got=" << letStmt->Name.Value << std::endl;
+        return false;
+    }
+
+    if (letStmt->Name.TokenLiteral() != name) {
+        std::cerr << "letStmt.Name.TokenLiteral() not '" << name << "'. got=" << letStmt->Name.TokenLiteral() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool testLiteralExpression(const Expression& exp, const std::variant<int, bool, std::string>& expected) {
+    switch (expected.index()) {
+        case 0: return testIntegerLiteral(exp, std::get<int>(expected));
+        case 1: return testBooleanLiteral(exp, std::get<bool>(expected));
+        case 2: return testIdentifier(exp, std::get<std::string>(expected));
+        default:
+            std::cerr << "type of exp not handled. got=" << typeid(exp).name() << std::endl;
+            return false;
+    }
+}
+
+bool testIntegerLiteral(const Expression& il, int value) {
+    const IntegerLiteral* integ = dynamic_cast<const IntegerLiteral*>(&il);
+    if (!integ) {
+        std::cerr << "il not IntegerLiteral. got=" << typeid(il).name() << std::endl;
+        return false;
+    }
+
+    if (integ->Value != value) {
+        std::cerr << "integ.Value not " << value << ". got=" << integ->Value << std::endl;
+        return false;
+    }
+
+    if (integ->TokenLiteral() != std::to_string(value)) {
+        std::cerr << "integ.TokenLiteral not " << value << ". got=" << integ->TokenLiteral() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool testIdentifier(const Expression& exp, const std::string& value) {
+    const Identifier* ident = dynamic_cast<const Identifier*>(&exp);
+    if (!ident) {
+        std::cerr << "exp not Identifier. got=" << typeid(exp).name() << std::endl;
+        return false;
+    }
+
+    if (ident->Value != value) {
+        std::cerr << "ident.Value not " << value << ". got=" << ident->Value << std::endl;
+        return false;
+    }
+
+    if (ident->TokenLiteral() != value) {
+        std::cerr << "ident.TokenLiteral not " << value << ". got=" << ident->TokenLiteral() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
+bool testBooleanLiteral(const Expression& exp, bool value) {
+    const Boolean* bo = dynamic_cast<const Boolean*>(&exp);
+    if (!bo) {
+        std::cerr << "exp not Boolean. got=" << typeid(exp).name() << std::endl;
+        return false;
+    }
+
+    if (bo->Value != value) {
+        std::cerr << "bo.Value not " << value << ". got=" << bo->Value << std::endl;
+        return false;
+    }
+
+    if (bo->TokenLiteral() != (value ? "true" : "false")) {
+        std::cerr << "bo.TokenLiteral not " << (value ? "true" : "false") << ". got=" << bo->TokenLiteral() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 void checkParserErrors(const Parser& p) {
     const auto& errors = p.Errors();
+    if (errors.empty()) {
+        return;
+    }
+
+    std::cerr << "parser has " << errors.size() << " errors" << std::endl;
     for (const auto& error : errors) {
         std::cerr << "parser error: " << error << std::endl;
     }
-    assert(errors.empty());
-}
 
-bool testLetStatement(const std::unique_ptr<Statement>& stmt, const std::string& expectedName) {
-    assert(stmt->TokenLiteral() == "let");
-    const auto* letStmt = dynamic_cast<LetStatement*>(stmt.get());
-    if (!letStmt) {
-        std::cerr << "stmt not a LetStatement. Got " << typeid(*stmt).name() << std::endl;
-        return false;
-    }
-    assert(letStmt->Name->Value == expectedName);
-    assert(letStmt->Name->TokenLiteral() == expectedName);
-    return true;
+    assert(false); // Halt execution if there are parser errors.
 }
 
 int main() {
     TestLetStatements();
-    // ... call other test functions ...
+    TestReturnStatements();
+    TestIdentifierExpression();
+    TestParsingPrefixExpressions();
+    TestParsingInfixExpressions();
+    TestOperatorPrecedenceParsing();
+    TestBooleanExpression();
+    TestIfExpression();
+    TestFunctionLiteralParsing();
+    TestFunctionParameterParsing();
+    TestCallExpressionParsing();
+    TestCallExpressionParameterParsing();
+    TestIntegerLiteralExpression();
+    TestParsingInfixExpressions();
 
     std::cout << "All tests passed!" << std::endl;
     return 0;
