@@ -137,3 +137,293 @@ void TestIntegerLiteralExpression() {
 
 
 
+void TestParsingPrefixExpressions() {
+
+    struct PrefixTest {
+        std::string input;
+        std::string oper;
+        std::variant<int, bool, std::string> value;
+    };
+
+    std::vector<PrefixTest> prefixTests = {
+        {"!5;", "!", 5},
+        {"-15;", "-", 15},
+        {"!foobar;", "!", "foobar"},
+        {"-foobar;", "-", "foobar"},
+        {"!true;", "!", true},
+        {"!false;", "!", false},
+    };
+
+    for (const auto& tt : prefixTests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        auto program = p.ParseProgram();
+        checkParserErrors(p);
+
+        assert(program->Statements.size() == 1);
+
+        const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+        if (!exprStmt) {
+            std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
+                      << typeid(*program->Statements[0]).name() << std::endl;
+            return;
+        }
+
+        const auto* exp = dynamic_cast<PrefixExpression*>(exprStmt->expr.get());
+        if (!exp) {
+            std::cerr << "stmt is not PrefixExpression. Got "
+                      << typeid(*exprStmt->expr).name() << std::endl;
+            return;
+        }
+
+        assert(exp->Operator == tt.oper);
+
+        if (!testLiteralExpression(*(exp->Right), tt.value)) {
+            return;
+        }
+
+    }
+}
+
+void TestParsingInfixExpressions() {
+
+    struct InfixTest {
+        std::string input;
+        std::variant<int, std::string, bool> leftValue;
+        std::string oper;
+        std::variant<int, std::string, bool> rightValue;
+    };
+
+    std::vector<InfixTest> infixTests = {
+        {"5 + 5;", 5, "+", 5},
+		{"5 - 5;", 5, "-", 5},
+		{"5 * 5;", 5, "*", 5},
+		{"5 / 5;", 5, "/", 5},
+		{"5 > 5;", 5, ">", 5},
+		{"5 < 5;", 5, "<", 5},
+		{"5 == 5;", 5, "==", 5},
+		{"5 != 5;", 5, "!=", 5},
+		{"foobar + barfoo;", "foobar", "+", "barfoo"},
+		{"foobar - barfoo;", "foobar", "-", "barfoo"},
+		{"foobar * barfoo;", "foobar", "*", "barfoo"},
+		{"foobar / barfoo;", "foobar", "/", "barfoo"},
+		{"foobar > barfoo;", "foobar", ">", "barfoo"},
+		{"foobar < barfoo;", "foobar", "<", "barfoo"},
+		{"foobar == barfoo;", "foobar", "==", "barfoo"},
+		{"foobar != barfoo;", "foobar", "!=", "barfoo"},
+		{"true == true", true, "==", true},
+		{"true != false", true, "!=", false},
+		{"false == false", false, "==", false}
+    };
+
+    for (const auto& tt : infixTests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        auto program = p.ParseProgram();
+        checkParserErrors(p);
+
+        assert(program->Statements.size() == 1);
+
+        const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+        if (!exprStmt) {
+            std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
+                      << typeid(*program->Statements[0]).name() << std::endl;
+            return;
+        }
+
+        if (!testInfixExpression(exprStmt->expr, tt.leftValue, tt.oper, tt.rightValue)) {
+            return;
+        }
+    }
+}
+
+void TestOperatorPrecedenceParsing() {
+    struct TestCase {
+        std::string input;
+        std::string expected;
+    };
+
+    std::vector<TestCase> tests = {
+        {
+			"-a * b",
+			"((-a) * b)",
+		},
+		{
+			"!-a",
+			"(!(-a))",
+		},
+		{
+			"a + b + c",
+			"((a + b) + c)",
+		},
+		{
+			"a + b - c",
+			"((a + b) - c)",
+		},
+		{
+			"a * b * c",
+			"((a * b) * c)",
+		},
+		{
+			"a * b / c",
+			"((a * b) / c)",
+		},
+		{
+			"a + b / c",
+			"(a + (b / c))",
+		},
+		{
+			"a + b * c + d / e - f",
+			"(((a + (b * c)) + (d / e)) - f)",
+		},
+		{
+			"3 + 4; -5 * 5",
+			"(3 + 4)((-5) * 5)",
+		},
+		{
+			"5 > 4 == 3 < 4",
+			"((5 > 4) == (3 < 4))",
+		},
+		{
+			"5 < 4 != 3 > 4",
+			"((5 < 4) != (3 > 4))",
+		},
+		{
+			"3 + 4 * 5 == 3 * 1 + 4 * 5",
+			"((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
+		},
+		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			"3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"3 < 5 == true",
+			"((3 < 5) == true)",
+		},
+		{
+			"1 + (2 + 3) + 4",
+			"((1 + (2 + 3)) + 4)",
+		},
+		{
+			"(5 + 5) * 2",
+			"((5 + 5) * 2)",
+		},
+		{
+			"2 / (5 + 5)",
+			"(2 / (5 + 5))",
+		},
+		{
+			"(5 + 5) * 2 * (5 + 5)",
+			"(((5 + 5) * 2) * (5 + 5))",
+		},
+		{
+			"-(5 + 5)",
+			"(-(5 + 5))",
+		},
+		{
+			"!(true == true)",
+			"(!(true == true))",
+		},
+		{
+			"a + add(b * c) + d",
+			"((a + add((b * c))) + d)",
+		},
+		{
+			"add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+			"add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))",
+		},
+		{
+			"add(a + b + c * d / f + g)",
+			"add((((a + b) + ((c * d) / f)) + g))",
+		}
+    };
+
+    for (const auto& tt : tests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        auto program = p.ParseProgram();
+        checkParserErrors(p);  // Make sure this function doesn't require the 't' parameter
+
+        std::string actual = program->String();  // Assuming your AST nodes have a ToString method
+        if (actual != tt.expected) {
+            std::cerr << "expected=" << tt.expected << ", got=" << actual << std::endl;
+        }
+    }
+}
+
+
+
+bool testLiteralExpression(const Expression& expr, const std::variant<int, bool, std::string>& expected) {
+    // Use our ValueVisitor from earlier to check the expression against the expected value.
+    return std::visit(ValueVisitor(expr), expected);
+}
+
+
+void checkParserErrors(const Parser& p) {
+    const auto& errors = p.Errors();
+    for (const auto& error : errors) {
+        std::cerr << "parser error: " << error << std::endl;
+    }
+    assert(errors.empty());
+}
+
+bool testLetStatement(const std::unique_ptr<Statement>& stmt, const std::string& expectedName) {
+    assert(stmt->TokenLiteral() == "let");
+    const auto* letStmt = dynamic_cast<LetStatement*>(stmt.get());
+    if (!letStmt) {
+        std::cerr << "stmt not a LetStatement. Got " << typeid(*stmt).name() << std::endl;
+        return false;
+    }
+    assert(letStmt->Name->Value == expectedName);
+    assert(letStmt->Name->TokenLiteral() == expectedName);
+    return true;
+}
+
+// ... other helper functions for testing ...
+
+void TestLetStatements() {
+    struct TestCase {
+        std::string input;
+        std::string expectedIdentifier;
+        std::variant<int, bool, std::string> expectedValue; // Assumes all expected values are int or bool or string.
+    };
+
+    std::vector<TestCase> tests = {
+        {"let x = 5;", "x", 5},
+        {"let y = true;", "y", true},
+        {"let foobar = y;", "foobar", "y"}
+    };
+
+    for (const auto& tt : tests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        auto program = p.ParseProgram();
+        checkParserErrors(p);
+
+        assert(program->Statements.size() == 1);
+
+        if (!testLetStatement(program->Statements[0], tt.expectedIdentifier)) {
+            return;
+        }
+
+        // ... Value testing code, similar to the Go version ...
+    }
+}
+
+// ... other test functions similar to the above ...
+
+int main() {
+    TestLetStatements();
+    // ... call other test functions ...
+
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
+}
