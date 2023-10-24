@@ -195,9 +195,9 @@ void TestParsingInfixExpressions() {
 
     struct InfixTest {
         std::string input;
-        std::variant<int, std::string, bool> leftValue;
+        std::variant<int, bool, std::string> leftValue;
         std::string oper;
-        std::variant<int, std::string, bool> rightValue;
+        std::variant<int, bool, std::string> rightValue;
     };
 
     std::vector<InfixTest> infixTests = {
@@ -237,7 +237,7 @@ void TestParsingInfixExpressions() {
             return;
         }
 
-        if (!testInfixExpression(exprStmt->expr, tt.leftValue, tt.oper, tt.rightValue)) {
+        if (!testInfixExpression(*exprStmt->expr, tt.leftValue, tt.oper, tt.rightValue)) {
             return;
         }
     }
@@ -437,7 +437,7 @@ void TestIfExpression() {
         return;
     }
 
-    if (!testInfixExpression(exp->Condition, "x", "<", "y")) {
+    if (!testInfixExpression(*exp->Condition, "x", "<", "y")) {
         return;
     }
 
@@ -454,7 +454,7 @@ void TestIfExpression() {
         return;
     }
 
-    if (!testIdentifier(consequence->expr, "x")) {
+    if (!testIdentifier(*consequence->expr, "x")) {
         return;
     }
 
@@ -498,8 +498,8 @@ void TestFunctionLiteralParsing() {
         return;
     }
 
-    testLiteralExpression(function->Parameters[0].get(), "x");
-    testLiteralExpression(function->Parameters[1].get(), "y");
+    testLiteralExpression(*function->Parameters[0].get(), "x");
+    testLiteralExpression(*function->Parameters[1].get(), "y");
 
     if (function->Body->Statements.size() != 1) {
         std::cerr << "function.Body.Statements has not 1 statements. got=" 
@@ -514,7 +514,7 @@ void TestFunctionLiteralParsing() {
         return;
     }
 
-    testInfixExpression(bodyStmt->expr.get(), "x", "+", "y");
+    testInfixExpression(*bodyStmt->expr.get(), "x", "+", "y");
 }
 
 void TestFunctionParameterParsing() {
@@ -554,7 +554,7 @@ void TestFunctionParameterParsing() {
         }
 
         for (size_t i = 0; i < tt.expectedParams.size(); ++i) {
-            testLiteralExpression(function->Parameters[i].get(), tt.expectedParams[i]);
+            testLiteralExpression(*function->Parameters[i].get(), tt.expectedParams[i]);
         }
     }
 }
@@ -587,7 +587,7 @@ void TestCallExpressionParsing() {
         return;
     }
 
-    if (!testIdentifier(exp->Function.get(), "add")) {
+    if (!testIdentifier(*exp->Function.get(), "add")) {
         return;
     }
 
@@ -596,9 +596,9 @@ void TestCallExpressionParsing() {
         return;
     }
 
-    testLiteralExpression(exp->Arguments[0].get(), 1);
-    testInfixExpression(exp->Arguments[1].get(), 2, "*", 3);
-    testInfixExpression(exp->Arguments[2].get(), 4, "+", 5);
+    testLiteralExpression(*exp->Arguments[0].get(), 1);
+    testInfixExpression(*exp->Arguments[1].get(), 2, "*", 3);
+    testInfixExpression(*exp->Arguments[2].get(), 4, "+", 5);
 }
 
 void TestCallExpressionParameterParsing() {
@@ -634,7 +634,7 @@ void TestCallExpressionParameterParsing() {
             return;
         }
 
-        if (!testIdentifier(exp->Function.get(), tt.expectedIdent)) {
+        if (!testIdentifier(*exp->Function.get(), tt.expectedIdent)) {
             return;
         }
 
@@ -665,13 +665,36 @@ bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& na
         return false;
     }
 
-    if (letStmt->Name.Value != name) {
-        std::cerr << "letStmt.Name.Value not '" << name << "'. got=" << letStmt->Name.Value << std::endl;
+    if (letStmt->Name->Value() != name) {
+        std::cerr << "letStmt.Name.Value not '" << name << "'. got=" << letStmt->Name->Value() << std::endl;
         return false;
     }
 
-    if (letStmt->Name.TokenLiteral() != name) {
-        std::cerr << "letStmt.Name.TokenLiteral() not '" << name << "'. got=" << letStmt->Name.TokenLiteral() << std::endl;
+    if (letStmt->Name->TokenLiteral() != name) {
+        std::cerr << "letStmt.Name.TokenLiteral() not '" << name << "'. got=" << letStmt->Name->TokenLiteral() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool testInfixExpression(const Expression& exp, const std::variant<int, bool, std::string>& left, const std::string& operator_, const std::variant<int, bool, std::string>& right) {
+    const InfixExpression* opExp = dynamic_cast<const InfixExpression*>(&exp);
+    if (!opExp) {
+        std::cerr << "exp is not InfixExpression. got=" << typeid(exp).name() << "(" << exp.String() << ")" << std::endl;
+        return false;
+    }
+
+    if (!testLiteralExpression(*opExp->Left, left)) {
+        return false;
+    }
+
+    if (opExp->Operator != operator_) {
+        std::cerr << "opExp.Operator is not '" << operator_ << "'. got=" << opExp->Operator << std::endl;
+        return false;
+    }
+
+    if (!testLiteralExpression(*opExp->Right, right)) {
         return false;
     }
 
@@ -716,8 +739,8 @@ bool testIdentifier(const Expression& exp, const std::string& value) {
         return false;
     }
 
-    if (ident->Value != value) {
-        std::cerr << "ident.Value not " << value << ". got=" << ident->Value << std::endl;
+    if (ident->Value() != value) {
+        std::cerr << "ident.Value not " << value << ". got=" << ident->Value() << std::endl;
         return false;
     }
 
