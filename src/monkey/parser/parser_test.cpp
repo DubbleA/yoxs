@@ -37,6 +37,12 @@ void TestLetStatements() {
 
         // Here, we'll directly get the value from the statement and test it.
         const Expression& value = *dynamic_cast<LetStatement*>(program->Statements[0].get())->Value;
+
+        // if(auto *ptr = dynamic_cast<LetStatement*>(program->Statements[0].get())){
+        // //use ptr
+        // }
+
+        #TODO FIX THE ABOVE
         if (!testLiteralExpression(value, tt.expectedValue)) {
             return;
         }
@@ -356,6 +362,105 @@ void TestOperatorPrecedenceParsing() {
         if (actual != tt.expected) {
             std::cerr << "expected=" << tt.expected << ", got=" << actual << std::endl;
         }
+    }
+}
+
+void TestBooleanExpression() {
+    struct TestCase {
+        std::string input;
+        bool expectedBoolean;
+    };
+
+    std::vector<TestCase> tests = {
+        {"true;", true},
+        {"false;", false},
+    };
+
+    for (const auto& tt : tests) {
+        Lexer l(tt.input);
+        Parser p(l);
+        auto program = p.ParseProgram();
+        checkParserErrors(p);
+
+        if (program->Statements.size() != 1) {
+            std::cerr << "program.Statements does not contain 1 statements. got=" 
+                      << program->Statements.size() << std::endl;
+            return; // This was a fatal error in Go, so we just return here.
+        }
+
+        auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+        if (!exprStmt) {
+            std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
+                      << typeid(*program->Statements[0]).name() << std::endl;
+            return;
+        }
+
+        auto* boolean = dynamic_cast<Boolean*>(exprStmt->expr.get());
+        if (!boolean) {
+            std::cerr << "exp not Boolean. Got "
+                      << typeid(*exprStmt->expr).name() << std::endl;
+            return;
+        }
+
+        if (boolean->Value != tt.expectedBoolean) {
+            std::cerr << "boolean.Value not " << tt.expectedBoolean
+                      << ". got=" << boolean->Value << std::endl;
+        }
+    }
+}
+
+void TestIfExpression() {
+    std::string input = "if (x < y) { x }";
+
+    Lexer l(input);
+    Parser p(l);
+    auto program = p.ParseProgram();
+    checkParserErrors(p);
+
+    if (program->Statements.size() != 1) {
+        std::cerr << "program.Statements does not contain 1 statements. got=" 
+                  << program->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    if (!stmt) {
+        std::cerr << "program.Statements[0] is not ExpressionStatement. got=" 
+                  << typeid(program->Statements[0].get()).name() << std::endl;
+        return;
+    }
+
+    auto* exp = dynamic_cast<IfExpression*>(stmt->expr.get());
+    if (!exp) {
+        std::cerr << "stmt.Expression is not IfExpression. got=" 
+                  << typeid(stmt->expr.get()).name() << std::endl;
+        return;
+    }
+
+    if (!testInfixExpression(exp->Condition, "x", "<", "y")) {
+        return;
+    }
+
+    if (exp->Consequence->Statements.size() != 1) {
+        std::cerr << "consequence is not 1 statements. got=" 
+                  << exp->Consequence->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* consequence = dynamic_cast<ExpressionStatement*>(exp->Consequence->Statements[0].get());
+    if (!consequence) {
+        std::cerr << "Statements[0] is not ExpressionStatement. got=" 
+                  << typeid(exp->Consequence->Statements[0].get()).name() << std::endl;
+        return;
+    }
+
+    if (!testIdentifier(consequence->expr, "x")) {
+        return;
+    }
+
+    if (exp->Alternative) {
+        std::cerr << "exp.Alternative.Statements was not nullptr. got some content." << std::endl;
+        return;
     }
 }
 
