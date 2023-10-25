@@ -1,6 +1,6 @@
 #include "parser.hpp"
 
-std::unordered_map<TokenType, int> precedences = {
+std::unordered_map<TokenType, Precedence> precedences = {
     { TokenType::EQ, EQUALS },
     { TokenType::NOT_EQ, EQUALS },
     { TokenType::LT, LESSGREATER },
@@ -282,7 +282,7 @@ std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
 }
 
 std::unique_ptr<InfixExpression> Parser::parseInfixExpression (std::unique_ptr<Expression> left){
-    auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, left);
+    auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, std::move(left));
     auto precedence = curPrecedence();
 
     nextToken();

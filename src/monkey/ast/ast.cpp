@@ -46,6 +46,7 @@ std::string ExpressionStatement::TokenLiteral() const {
 std::string ExpressionStatement::String() const {
     return (expr ? expr->String() : "");
 }
+BlockStatement::BlockStatement(const Token& t) : token(t) {}
 
 std::string BlockStatement::TokenLiteral() const {
     return token.Literal;
@@ -59,15 +60,13 @@ std::string BlockStatement::String() const {
     return out.str();
 }
 
-std::string Identifier::Value() const {
-    return token.Literal;
-}
-
 Identifier::Identifier(const Token& t, const std::string& v) : token(t) {
     token.Literal = v;
 }
 
-InfixExpression::InfixExpression(const Token& tok, const std::string& op, std::unique_ptr<Expression> leftExp) : token(tok), Operator(op), Left(std::move(leftExp)) {}
+std::string Identifier::Value() const {
+    return token.Literal;
+}
 
 std::string Identifier::TokenLiteral() const {
     return token.Literal;
@@ -76,6 +75,8 @@ std::string Identifier::TokenLiteral() const {
 std::string Identifier::String() const {
     return token.Literal;
 }
+
+Boolean::Boolean(const Token& t, const bool& v) : token(t), Value(v) {}
 
 std::string Boolean::TokenLiteral() const {
     return token.Literal;
@@ -93,6 +94,8 @@ std::string IntegerLiteral::String() const {
     return token.Literal;
 }
 
+PrefixExpression::PrefixExpression(const Token& t, const std::string& v) : token(t), Operator(v) {}
+
 std::string PrefixExpression::TokenLiteral() const {
     return token.Literal;
 }
@@ -101,6 +104,8 @@ std::string PrefixExpression::String() const {
     return "(" + Operator + Right->String() + ")";
 }
 
+InfixExpression::InfixExpression(const Token& tok, const std::string& op, std::unique_ptr<Expression> leftExp) : token(tok), Operator(op), Left(std::move(leftExp)) {}
+
 std::string InfixExpression::TokenLiteral() const {
     return token.Literal;
 }
@@ -108,6 +113,8 @@ std::string InfixExpression::TokenLiteral() const {
 std::string InfixExpression::String() const {
     return "(" + Left->String() + " " + Operator + " " + Right->String() + ")";
 }
+
+IfExpression::IfExpression(const Token& t) : token(t) {}
 
 std::string IfExpression::TokenLiteral() const {
     return token.Literal;
@@ -120,6 +127,8 @@ std::string IfExpression::String() const {
     }
     return result;
 }
+
+FunctionLiteral::FunctionLiteral(const Token& t) : token(t) {}
 
 std::string FunctionLiteral::TokenLiteral() const {
     return token.Literal;
@@ -134,6 +143,8 @@ std::string FunctionLiteral::String() const {
     result += join(params, ", ") + ") " + Body->String();
     return result;
 }
+
+CallExpression::CallExpression (const Token& t, std::unique_ptr<Expression>& f) : token(t), Function(std::move(f)){}
 
 std::string CallExpression::TokenLiteral() const {
     return token.Literal;

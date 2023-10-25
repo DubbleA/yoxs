@@ -61,6 +61,7 @@ public:
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void statementNode() override {}
 };
 
 class ExpressionStatement : public Statement {
@@ -70,15 +71,18 @@ public:
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void statementNode() override {}
 };
 
 class BlockStatement : public Statement {
 public:
+    BlockStatement(const Token& t);
     Token token; // the '{' token
     std::vector<std::unique_ptr<Statement>> Statements;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void statementNode() override {}
 };
 
 class Identifier : public Expression {
@@ -87,9 +91,7 @@ public:
 
     Token token; // The IDENT token
     std::string Value() const;
-
     std::string TokenLiteral() const override;
-
     std::string String() const override;
     void expressionNode() override {}
 
@@ -97,11 +99,13 @@ public:
 
 class Boolean : public Expression {
 public:
+    Boolean(const Token& t, const bool& v);
     Token token;
     bool Value;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class IntegerLiteral : public Expression {
@@ -111,16 +115,20 @@ public:
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class PrefixExpression : public Expression {
 public:
+    PrefixExpression(const Token& t, const std::string& v);
+
     Token token; // The prefix token, e.g. !
     std::string Operator;
     std::unique_ptr<Expression> Right;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class InfixExpression : public Expression {
@@ -134,10 +142,12 @@ public:
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class IfExpression : public Expression {
 public:
+    IfExpression(const Token& t);
     Token token; // The 'if' token
     std::unique_ptr<Expression> Condition;
     std::unique_ptr<BlockStatement> Consequence;
@@ -145,26 +155,31 @@ public:
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class FunctionLiteral : public Expression {
 public:
+    FunctionLiteral(const Token& t);
     Token token; // The 'fn' token
     std::vector<std::unique_ptr<Identifier>> Parameters;
     std::unique_ptr<BlockStatement> Body;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 class CallExpression : public Expression {
 public:
+    CallExpression(const Token& t, std::unique_ptr<Expression>& f);
     Token token; // The '(' token
     std::unique_ptr<Expression> Function; // Identifier or FunctionLiteral
     std::vector<std::unique_ptr<Expression>> Arguments;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
+    void expressionNode() override {}
 };
 
 std::string join(const std::vector<std::string>&, const std::string&);

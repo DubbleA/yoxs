@@ -806,3 +806,13 @@ int main() {
     std::cout << "All tests passed!" << std::endl;
     return 0;
 }
+
+//g++ -std=c++17 -Isrc -o parser_test src/monkey/parser/parser.cpp src/monkey/lexer/lexer.cpp src/monkey/token/token.cpp src/monkey/parser/parser_test.cpp && ./parser_test
+//in cpp code file
+
+// g++ -std=c++17 -Isrc -c src/monkey/parser/parser.cpp -o parser.o
+// g++ -std=c++17 -Isrc -c src/monkey/lexer/lexer.cpp -o lexer.o
+// g++ -std=c++17 -Isrc -c src/monkey/token/token.cpp -o token.o
+// g++ -std=c++17 -Isrc -c src/monkey/parser/parser_test.cpp -o parser_test.o
+// g++ -o parser_test parser.o lexer.o token.o parser_test.o
+// ./parser_test
