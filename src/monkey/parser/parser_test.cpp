@@ -6,6 +6,27 @@
 #include <cassert>
 #include <variant>
 
+void TestLetStatements();
+void TestReturnStatements();
+void TestIdentifierExpression();
+void TestIntegerLiteralExpression();
+void TestParsingPrefixExpressions();
+void TestParsingInfixExpressions();
+void TestOperatorPrecedenceParsing();
+void TestBooleanExpression();
+void TestIfExpression();
+void TestFunctionLiteralParsing();
+void TestFunctionParameterParsing();
+void TestCallExpressionParsing();
+void TestCallExpressionParameterParsing();
+bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& name);
+bool testInfixExpression(const Expression& exp, const std::variant<int, bool, std::string>& left, const std::string& operator_, const std::variant<int, bool, std::string>& right);
+bool testLiteralExpression(const Expression& exp, const std::variant<int, bool, std::string>& expected);
+bool testIntegerLiteral(const Expression& il, int value);
+bool testIdentifier(const Expression& exp, const std::string& value);
+bool testBooleanLiteral(const Expression& exp, bool value);
+void checkParserErrors(const Parser& p);
+
 void TestLetStatements() {
     struct TestCase {
         std::string input;
@@ -70,9 +91,9 @@ void TestReturnStatements() {
         assert(program->Statements.size() == 1);
 
         const auto& stmt = program->Statements[0];
-        const auto* returnStmt = dynamic_cast<ReturnStatement*>(stmt.get());
+        auto returnStmt = dynamic_cast<ReturnStatement*>(stmt.get());
         if (!returnStmt) {
-            std::cerr << "stmt not a ReturnStatement. Got " << typeid(*stmt).name() << std::endl;
+            std::cerr << "stmt not a ReturnStatement. Got " << typeid(stmt).name() << std::endl;
             return;
         }
 
@@ -98,14 +119,15 @@ void TestIdentifierExpression() {
     const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
     if (!exprStmt) {
         std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
-                  << typeid(*program->Statements[0]).name() << std::endl;
+                  << typeid(program->Statements[0].get()).name() << std::endl;
+
         return;
     }
 
     const auto* ident = dynamic_cast<Identifier*>(exprStmt->expr.get());
     if (!ident) {
         std::cerr << "exp not Identifier. Got "
-                  << typeid(*exprStmt->expr).name() << std::endl;
+                  << typeid(exprStmt->expr.get()).name() << std::endl;
         return;
     }
 
@@ -125,15 +147,17 @@ void TestIntegerLiteralExpression() {
 
     const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
     if (!exprStmt) {
+
         std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
-                  << typeid(*program->Statements[0]).name() << std::endl;
+                  << typeid(program->Statements[0].get()).name() << std::endl;
+
         return;
     }
 
     const auto* literal = dynamic_cast<IntegerLiteral*>(exprStmt->expr.get());
     if (!literal) {
         std::cerr << "exp not IntegerLiteral. Got "
-                  << typeid(*exprStmt->expr).name() << std::endl;
+                  << typeid(exprStmt->expr.get()).name() << std::endl;
         return;
     }
 
@@ -171,14 +195,14 @@ void TestParsingPrefixExpressions() {
         const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
         if (!exprStmt) {
             std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
-                      << typeid(*program->Statements[0]).name() << std::endl;
+                      << typeid(program->Statements[0].get()).name() << std::endl;
             return;
         }
 
         const auto* exp = dynamic_cast<PrefixExpression*>(exprStmt->expr.get());
         if (!exp) {
             std::cerr << "stmt is not PrefixExpression. Got "
-                      << typeid(*exprStmt->expr).name() << std::endl;
+                      << typeid(exprStmt->expr.get()).name() << std::endl;
             return;
         }
 
@@ -233,7 +257,7 @@ void TestParsingInfixExpressions() {
         const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
         if (!exprStmt) {
             std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
-                      << typeid(*program->Statements[0]).name() << std::endl;
+                      << typeid(program->Statements[0].get()).name() << std::endl;
             return;
         }
 
@@ -391,14 +415,15 @@ void TestBooleanExpression() {
         auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
         if (!exprStmt) {
             std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
-                      << typeid(*program->Statements[0]).name() << std::endl;
+                      << typeid(program->Statements[0].get()).name() << std::endl;
+
             return;
         }
 
         auto* boolean = dynamic_cast<Boolean*>(exprStmt->expr.get());
         if (!boolean) {
             std::cerr << "exp not Boolean. Got "
-                      << typeid(*exprStmt->expr).name() << std::endl;
+                      << typeid(exprStmt->expr.get()).name() << std::endl;
             return;
         }
 
@@ -480,15 +505,15 @@ void TestFunctionLiteralParsing() {
 
     auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
     if (!exprStmt) {
-        std::cerr << "program.Statements[0] is not ExpressionStatement. Got " 
-                  << typeid(*program->Statements[0]).name() << std::endl;
+        std::cerr << "program.Statements[0] is not ExpressionStatement. Got "
+                  << typeid(program->Statements[0].get()).name() << std::endl;
         return;
     }
 
     auto* function = dynamic_cast<FunctionLiteral*>(exprStmt->expr.get());
     if (!function) {
         std::cerr << "stmt.Expression is not FunctionLiteral. Got "
-                  << typeid(*exprStmt->expr).name() << std::endl;
+                  << typeid(exprStmt->expr.get()).name() << std::endl;
         return;
     }
 
@@ -510,7 +535,7 @@ void TestFunctionLiteralParsing() {
     auto* bodyStmt = dynamic_cast<ExpressionStatement*>(function->Body->Statements[0].get());
     if (!bodyStmt) {
         std::cerr << "function body stmt is not ExpressionStatement. Got "
-                  << typeid(*function->Body->Statements[0]).name() << std::endl;
+                  << typeid(function->Body->Statements[0].get()).name() << std::endl;
         return;
     }
 
@@ -661,7 +686,7 @@ bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& na
 
     const LetStatement* letStmt = dynamic_cast<LetStatement*>(s.get());
     if (!letStmt) {
-        std::cerr << "s not LetStatement. got=" << typeid(*s).name() << std::endl;
+        std::cerr << "s not LetStatement. got=" << typeid(s.get()).name() << std::endl;
         return false;
     }
 
