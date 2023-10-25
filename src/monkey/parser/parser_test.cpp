@@ -839,5 +839,6 @@ int main() {
 // g++ -std=c++17 -Isrc -c src/monkey/lexer/lexer.cpp -o lexer.o
 // g++ -std=c++17 -Isrc -c src/monkey/token/token.cpp -o token.o
 // g++ -std=c++17 -Isrc -c src/monkey/parser/parser_test.cpp -o parser_test.o
-// g++ -o parser_test parser.o lexer.o token.o parser_test.o
+// g++ -std=c++17 -Isrc -c src/monkey/ast/ast.cpp -o ast.o
+// g++ -o parser_test parser.o lexer.o token.o ast.o parser_test.o
 // ./parser_test

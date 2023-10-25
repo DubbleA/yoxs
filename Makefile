@@ -1,5 +1,6 @@
 # Directories
 SRC_DIR = src
+PARSER_DIR = $(SRC_DIR)/monkey/parser
 AST_DIR = $(SRC_DIR)/monkey/ast
 LEXER_DIR = $(SRC_DIR)/monkey/lexer
 REPL_DIR = $(SRC_DIR)/monkey/repl
@@ -30,6 +31,10 @@ repl_test:
 ast_test:
 	$(CXX) $(CXXFLAGS) $(AST_DIR)/ast.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast_test.cpp -o ast_test.out
 	./ast_test.out
+
+parser_test:
+	$(CXX) $(CXXFLAGS) $(PARSER_DIR)/parser_test.cpp $(PARSER_DIR)/parser.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp -o parser_test.out
+	./parser_test.out
 
 all_tests: ast_test lexer_test repl_test token_test
 	@echo "All tests passed!"
