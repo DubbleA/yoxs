@@ -32,6 +32,6 @@ jobs:
 
     - name: Run AST tests
       run: make ast_test
-      
+
     - name: Run Parser tests
-    run: make parser_test
+      run: make parser_test
