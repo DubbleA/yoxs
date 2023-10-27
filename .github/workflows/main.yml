@@ -35,3 +35,9 @@ jobs:
 
     - name: Run Parser tests
       run: make parser_test
+      
+    - name: Build project
+      run: make build
+
+    - name: Run all tests
+      run: make all_tests
