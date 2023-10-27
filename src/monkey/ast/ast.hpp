@@ -9,7 +9,7 @@
 #include "../token/token.hpp"
 
 // Forward declarations of all the classes we're going to use.
-class Statement;
+class Statement; 
 class Expression;
 class Identifier;
 

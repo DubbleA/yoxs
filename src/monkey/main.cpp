@@ -11,4 +11,4 @@ int main() {
     return 0;
 }
 
-//g++ -std=c++17 -I. -o monkey_repl main.cpp repl/repl.cpp lexer/lexer.cpp token/token.cpp && ./monkey_repl
+//g++ -std=c++17 -I. -o monkey_repl main.cpp repl/repl.cpp lexer/lexer.cpp parser/parser.cpp ast/ast.cpp token/token.cpp && ./monkey_repl

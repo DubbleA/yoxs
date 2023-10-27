@@ -34,6 +34,13 @@ private:
     Lexer* lexer;
     Token curToken;
     Token peekToken;
+    //curToken and peekToken act exactly like the two “pointers” our 
+    //lexer has: position and readPosition. But instead of pointing 
+    //to a character in the input, they point to the current and the 
+    //next token. Both are important: we need to look at the curToken, 
+    //which is the current token under examination, to decide what to 
+    //do next, and we also need peekToken for this decision if 
+    //curToken doesn’t give us enough information.
     std::vector<std::string> errors;
 
     using prefixParseFn = std::function<std::unique_ptr<Expression>(void)>;

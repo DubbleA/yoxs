@@ -76,7 +76,7 @@ Parser::Parser(Lexer& l) : lexer(&l) {
         return this->parseCallExpression(std::move(function));
     });
 
-    // Read two tokens for initialization
+    // Read two tokens, so curToken and peekToken are both set
     nextToken();
     nextToken();
 }

@@ -41,3 +41,8 @@ This is because I have gotten to the point in Scott Meyers Effective modern c++ 
 To briefly explain, my interpretation of his reasoning is the fact that 'using' syntax is more readable, and is consistent with template type aliasing.
 
 I am not entirely sure tbh, just kinda winging it if im being honest. 
+
+
+The Program node is going to be the root node of every AST our parser produces. Every valid Monkey program is a series of statements. These statements are contained in the Program.Statements, which is just a slice of AST nodes that implement the Statement interface.
+
+file:///Users/nlmb/Documents/writing_an_interpreter_in_go_1.7/images/let_statement.png

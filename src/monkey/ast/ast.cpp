@@ -141,6 +141,7 @@ std::string FunctionLiteral::String() const {
         params.push_back(param->String());
     }
     result += join(params, ", ") + ") " + Body->String();
+    //result += join(params, ", ") + ") { " + Body->String() + " }";
     return result;
 }
 
