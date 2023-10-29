@@ -12,3 +12,14 @@ int main() {
 }
 
 //g++ -std=c++17 -I. -o monkey_repl main.cpp repl/repl.cpp lexer/lexer.cpp parser/parser.cpp ast/ast.cpp token/token.cpp && ./monkey_repl
+
+/*
+Feel free to type in commands
+>> let x = 1 * 2 * 3 * 4 * 5
+let x = ((((1 * 2) * 3) * 4) * 5);
+>> x * y / 2 + 3 * 8 - 123
+((((x * y) / 2) + (3 * 8)) - 123)
+>> true == false
+(true == false)
+>>
+*/
