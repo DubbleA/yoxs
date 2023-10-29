@@ -16,3 +16,11 @@ As we further develop our REPL, we will incorporate the evaluation stage, enabli
 
 ## Note
 The tokens produced by the REPL are integral to the process, serving as the bridge between raw user input and the interpreter. For more details on the tokenization process and the structure of tokens, please refer to the **Token Documentation**.
+
+## Example Function
+let x = 10;
+let y = 15;
+
+let add = fn(a, b) {
+  return a + b;
+};
