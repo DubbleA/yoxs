@@ -69,8 +69,8 @@ public:
     std::unique_ptr<BlockStatement> Body;
     std::unique_ptr<Environment> Env;
 
-    Function(const std::vector<std::unique_ptr<Identifier>>& parameters, std::unique_ptr<BlockStatement> body, std::unique_ptr<Environment> env)
-        : Parameters(parameters), Body(std::move(body)), Env(std::move(env)) {}
+    Function(const std::vector<std::unique_ptr<Identifier>>& parameters, std::unique_ptr<Environment> env, std::unique_ptr<BlockStatement> body)
+        : Parameters(parameters), Env(std::move(env)), Body(std::move(body)) {}
     ObjectType Type() override { return FUNCTION_OBJ; }
     std::string Inspect() const override;
 };
