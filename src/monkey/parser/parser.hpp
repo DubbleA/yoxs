@@ -28,7 +28,7 @@ public:
     Parser(Lexer& l);
 
     std::vector<std::string> Errors() const; 
-    std::unique_ptr<Program> ParseProgram();
+    std::shared_ptr<Program> ParseProgram();
 
 private:
     Lexer* lexer;
@@ -43,8 +43,8 @@ private:
     //curToken doesn’t give us enough information.
     std::vector<std::string> errors;
 
-    using prefixParseFn = std::function<std::unique_ptr<Expression>(void)>;
-    using infixParseFn = std::function<std::unique_ptr<Expression>(std::unique_ptr<Expression>)>;
+    using prefixParseFn = std::function<std::shared_ptr<Expression>(void)>;
+    using infixParseFn = std::function<std::shared_ptr<Expression>(std::shared_ptr<Expression>)>;
 
     std::unordered_map<TokenType, prefixParseFn> prefixParseFns;
     std::unordered_map<TokenType, infixParseFn> infixParseFns;
@@ -63,26 +63,26 @@ private:
 
     // Parsing functions here...
 
-    std::unique_ptr<Statement> parseStatement();
-    std::unique_ptr<LetStatement> parseLetStatement();
-    std::unique_ptr<ReturnStatement> parseReturnStatement();
-    std::unique_ptr<ExpressionStatement> parseExpressionStatement();
+    std::shared_ptr<Statement> parseStatement();
+    std::shared_ptr<LetStatement> parseLetStatement();
+    std::shared_ptr<ReturnStatement> parseReturnStatement();
+    std::shared_ptr<ExpressionStatement> parseExpressionStatement();
 
-    std::unique_ptr<Expression> parseExpression(Precedence pVal);
+    std::shared_ptr<Expression> parseExpression(Precedence pVal);
 
-    std::unique_ptr<Identifier> parseIdentifier();
-    std::unique_ptr<IntegerLiteral> parseIntegerLiteral();
+    std::shared_ptr<Identifier> parseIdentifier();
+    std::shared_ptr<IntegerLiteral> parseIntegerLiteral();
 
-    std::unique_ptr<PrefixExpression> parsePrefixExpression();
-    std::unique_ptr<InfixExpression> parseInfixExpression(std::unique_ptr<Expression> left);
-    std::unique_ptr<Boolean> parseBoolean();
-    std::unique_ptr<Expression> parseGroupedExpression();
-    std::unique_ptr<IfExpression> parseIfExpression();
-    std::unique_ptr<BlockStatement> parseBlockStatement();
-    std::unique_ptr<FunctionLiteral> parseFunctionLiteral();
-    std::vector<std::unique_ptr<Identifier>> parseFunctionParameters();     
-    std::unique_ptr<CallExpression> parseCallExpression(std::unique_ptr<Expression> function);
-    std::vector<std::unique_ptr<Expression>> parseCallArguments();
+    std::shared_ptr<PrefixExpression> parsePrefixExpression();
+    std::shared_ptr<InfixExpression> parseInfixExpression(std::shared_ptr<Expression> left);
+    std::shared_ptr<Boolean> parseBoolean();
+    std::shared_ptr<Expression> parseGroupedExpression();
+    std::shared_ptr<IfExpression> parseIfExpression();
+    std::shared_ptr<BlockStatement> parseBlockStatement();
+    std::shared_ptr<FunctionLiteral> parseFunctionLiteral();
+    std::vector<std::shared_ptr<Identifier>> parseFunctionParameters();     
+    std::shared_ptr<CallExpression> parseCallExpression(std::shared_ptr<Expression> function);
+    std::vector<std::shared_ptr<Expression>> parseCallArguments();
 
 };
 

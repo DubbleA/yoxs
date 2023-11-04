@@ -36,7 +36,7 @@ public:
 // The root node of every AST our parser produces
 class Program : public Node {
 public:
-    std::vector<std::unique_ptr<Statement>> Statements;
+    std::vector<std::shared_ptr<Statement>> Statements;
     std::string TokenLiteral() const override;
     std::string String() const override;
 };
@@ -45,8 +45,8 @@ public:
 class LetStatement : public Statement {
 public:
     Token token; // The 'let' token
-    std::unique_ptr<Identifier> Name;
-    std::unique_ptr<Expression> Value;
+    std::shared_ptr<Identifier> Name;
+    std::shared_ptr<Expression> Value;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -57,7 +57,7 @@ public:
 class ReturnStatement : public Statement {
 public:
     Token token; // the 'return' token
-    std::unique_ptr<Expression> ReturnValue;
+    std::shared_ptr<Expression> ReturnValue;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -67,7 +67,7 @@ public:
 class ExpressionStatement : public Statement {
 public:
     Token token; // the first token of the expression
-    std::unique_ptr<Expression> expr;
+    std::shared_ptr<Expression> expr;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -78,7 +78,7 @@ class BlockStatement : public Statement {
 public:
     BlockStatement(const Token& t);
     Token token; // the '{' token
-    std::vector<std::unique_ptr<Statement>> Statements;
+    std::vector<std::shared_ptr<Statement>> Statements;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -125,7 +125,7 @@ public:
 
     Token token; // The prefix token, e.g. !
     std::string Operator;
-    std::unique_ptr<Expression> Right;
+    std::shared_ptr<Expression> Right;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -135,11 +135,11 @@ public:
 class InfixExpression : public Expression {
 public:
 
-    InfixExpression(const Token& tok, const std::string& op, std::unique_ptr<Expression> leftExp);
+    InfixExpression(const Token& tok, const std::string& op, std::shared_ptr<Expression> leftExp);
     Token token; // The operator token, e.g. +
-    std::unique_ptr<Expression> Left;
+    std::shared_ptr<Expression> Left;
     std::string Operator;
-    std::unique_ptr<Expression> Right;
+    std::shared_ptr<Expression> Right;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -150,9 +150,9 @@ class IfExpression : public Expression {
 public:
     IfExpression(const Token& t);
     Token token; // The 'if' token
-    std::unique_ptr<Expression> Condition;
-    std::unique_ptr<BlockStatement> Consequence;
-    std::unique_ptr<BlockStatement> Alternative;
+    std::shared_ptr<Expression> Condition;
+    std::shared_ptr<BlockStatement> Consequence;
+    std::shared_ptr<BlockStatement> Alternative;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -163,8 +163,8 @@ class FunctionLiteral : public Expression {
 public:
     FunctionLiteral(const Token& t);
     Token token; // The 'fn' token
-    std::vector<std::unique_ptr<Identifier>> Parameters;
-    std::unique_ptr<BlockStatement> Body;
+    std::vector<std::shared_ptr<Identifier>> Parameters;
+    std::shared_ptr<BlockStatement> Body;
 
     std::string TokenLiteral() const override;
     std::string String() const override;
@@ -173,10 +173,10 @@ public:
 
 class CallExpression : public Expression {
 public:
-    CallExpression(const Token& t, std::unique_ptr<Expression>& f);
+    CallExpression(const Token& t, std::shared_ptr<Expression>& f);
     Token token; // The '(' token
-    std::unique_ptr<Expression> Function; // Identifier or FunctionLiteral
-    std::vector<std::unique_ptr<Expression>> Arguments;
+    std::shared_ptr<Expression> Function; // Identifier or FunctionLiteral
+    std::vector<std::shared_ptr<Expression>> Arguments;
 
     std::string TokenLiteral() const override;
     std::string String() const override;

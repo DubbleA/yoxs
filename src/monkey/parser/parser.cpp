@@ -19,60 +19,60 @@ Parser::Parser(Lexer& l) : lexer(&l) {
 
 
     // Register prefix functions using lambda functions for explicit casting
-    registerPrefix(TokenType::IDENT, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::IDENT, [this]() -> std::shared_ptr<Expression> {
         return this->parseIdentifier();
     });
-    registerPrefix(TokenType::INT, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::INT, [this]() -> std::shared_ptr<Expression> {
         return this->parseIntegerLiteral();
     });
-    registerPrefix(TokenType::BANG, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::BANG, [this]() -> std::shared_ptr<Expression> {
         return this->parsePrefixExpression();
     });
-    registerPrefix(TokenType::MINUS, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::MINUS, [this]() -> std::shared_ptr<Expression> {
         return this->parsePrefixExpression();
     });
-    registerPrefix(TokenType::TRUE, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::TRUE, [this]() -> std::shared_ptr<Expression> {
         return this->parseBoolean();
     });
-    registerPrefix(TokenType::FALSE, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::FALSE, [this]() -> std::shared_ptr<Expression> {
         return this->parseBoolean();
     });
-    registerPrefix(TokenType::LPAREN, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::LPAREN, [this]() -> std::shared_ptr<Expression> {
         return this->parseGroupedExpression();
     });
-    registerPrefix(TokenType::IF, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::IF, [this]() -> std::shared_ptr<Expression> {
         return this->parseIfExpression();
     });
-    registerPrefix(TokenType::FUNCTION, [this]() -> std::unique_ptr<Expression> {
+    registerPrefix(TokenType::FUNCTION, [this]() -> std::shared_ptr<Expression> {
         return this->parseFunctionLiteral();
     });
 
     // Register infix functions using lambda functions for explicit casting
-    registerInfix(TokenType::PLUS, [this](std::unique_ptr<Expression> left) -> std::unique_ptr<Expression> {
+    registerInfix(TokenType::PLUS, [this](std::shared_ptr<Expression> left) -> std::shared_ptr<Expression> {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::MINUS, [this](std::unique_ptr<Expression> left) -> std::unique_ptr<Expression> {
+    registerInfix(TokenType::MINUS, [this](std::shared_ptr<Expression> left) -> std::shared_ptr<Expression> {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::SLASH, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::SLASH, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::ASTERISK, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::ASTERISK, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::EQ, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::EQ, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::NOT_EQ, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::NOT_EQ, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::LT, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::LT, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::GT, [this](std::unique_ptr<Expression> left) {
+    registerInfix(TokenType::GT, [this](std::shared_ptr<Expression> left) {
         return this->parseInfixExpression(std::move(left));
     });
-    registerInfix(TokenType::LPAREN, [this](std::unique_ptr<Expression> function) {
+    registerInfix(TokenType::LPAREN, [this](std::shared_ptr<Expression> function) {
         return this->parseCallExpression(std::move(function));
     });
 
@@ -144,9 +144,9 @@ int Parser::curPrecedence() const {
 
 // Parsing functions here...
 
-std::unique_ptr<Program> Parser::ParseProgram() {
-    auto program = std::make_unique<Program>();
-    program->Statements = std::vector<std::unique_ptr<Statement>>();
+std::shared_ptr<Program> Parser::ParseProgram() {
+    auto program = std::make_shared<Program>();
+    program->Statements = std::vector<std::shared_ptr<Statement>>();
 
     while(!curTokenIs(TokenType::EOF_TOKEN)) {
         auto stmt = parseStatement();
@@ -157,7 +157,7 @@ std::unique_ptr<Program> Parser::ParseProgram() {
     return program;
 }
 
-std::unique_ptr<Statement> Parser::parseStatement(){
+std::shared_ptr<Statement> Parser::parseStatement(){
     switch (curToken.Type)
     {
     case TokenType::LET:
@@ -174,15 +174,15 @@ std::unique_ptr<Statement> Parser::parseStatement(){
     }
 }
 
-std::unique_ptr<LetStatement> Parser::parseLetStatement() {
-    auto stmt = std::make_unique<LetStatement>();
+std::shared_ptr<LetStatement> Parser::parseLetStatement() {
+    auto stmt = std::make_shared<LetStatement>();
     stmt->token = curToken;
 
     if (!expectPeek(TokenType::IDENT)) {
         return nullptr;
     }
 
-    stmt->Name = std::make_unique<Identifier> (curToken, curToken.Literal); 
+    stmt->Name = std::make_shared<Identifier> (curToken, curToken.Literal); 
 
     if(!expectPeek(TokenType::ASSIGN)) {
         return nullptr;
@@ -198,8 +198,8 @@ std::unique_ptr<LetStatement> Parser::parseLetStatement() {
     return stmt;
 }
 
-std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
-    auto stmt = std::make_unique<ReturnStatement>();
+std::shared_ptr<ReturnStatement> Parser::parseReturnStatement() {
+    auto stmt = std::make_shared<ReturnStatement>();
     stmt->token = curToken;
 
     nextToken();
@@ -212,8 +212,8 @@ std::unique_ptr<ReturnStatement> Parser::parseReturnStatement() {
     return stmt;
 }
 
-std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
-    auto stmt = std::make_unique<ExpressionStatement>();
+std::shared_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
+    auto stmt = std::make_shared<ExpressionStatement>();
     stmt->expr = parseExpression(Precedence::LOWEST); // check if valid
 
     if (peekTokenIs(TokenType::SEMICOLON)){
@@ -223,14 +223,14 @@ std::unique_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
     return stmt;
 }
 
-std::unique_ptr<Expression> Parser::parseExpression(Precedence pVal){
+std::shared_ptr<Expression> Parser::parseExpression(Precedence pVal){
     auto prefixIt = prefixParseFns.find(curToken.Type);
     if (prefixIt == prefixParseFns.end()) {
         noPrefixParseFnError(curToken.Type);
         return nullptr;
     }
     auto prefix = prefixIt->second;
-    std::unique_ptr<Expression> leftExp = (prefix)();
+    std::shared_ptr<Expression> leftExp = (prefix)();
     //here we are calling prefix like a function and the parentheses after prefix 
     //are invoking the callable object. if prefix is a lambda or std::function
     //wrapping a lambda it will invoke the lambdas code. 
@@ -243,19 +243,19 @@ std::unique_ptr<Expression> Parser::parseExpression(Precedence pVal){
 
         auto infix = infixIt->second;
         leftExp = (infix)(std::move(leftExp));
-        //std::move is used to transfer the ownership of the std::unique_ptr to the function
+        //std::move is used to transfer the ownership of the std::shared_ptr to the function
     }
 
     return leftExp;
 
 }
 
-std::unique_ptr<Identifier>  Parser::parseIdentifier(){
-    return std::make_unique<Identifier> (curToken, curToken.Literal);
+std::shared_ptr<Identifier>  Parser::parseIdentifier(){
+    return std::make_shared<Identifier> (curToken, curToken.Literal);
 }
 
-std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
-    auto lit = std::make_unique<IntegerLiteral>();
+std::shared_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
+    auto lit = std::make_shared<IntegerLiteral>();
     lit->token = curToken;
 
     try {
@@ -270,8 +270,8 @@ std::unique_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
     return lit;
 }
 
-std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
-    auto expression = std::make_unique<PrefixExpression>(curToken, curToken.Literal);
+std::shared_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
+    auto expression = std::make_shared<PrefixExpression>(curToken, curToken.Literal);
 
     nextToken();
 
@@ -281,8 +281,8 @@ std::unique_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
 
 }
 
-std::unique_ptr<InfixExpression> Parser::parseInfixExpression (std::unique_ptr<Expression> left){
-    auto expression = std::make_unique<InfixExpression>(curToken, curToken.Literal, std::move(left));
+std::shared_ptr<InfixExpression> Parser::parseInfixExpression (std::shared_ptr<Expression> left){
+    auto expression = std::make_shared<InfixExpression>(curToken, curToken.Literal, std::move(left));
     auto precedence = curPrecedence();
 
     nextToken();
@@ -291,11 +291,11 @@ std::unique_ptr<InfixExpression> Parser::parseInfixExpression (std::unique_ptr<E
     return expression;
 }
 
-std::unique_ptr<Boolean> Parser::parseBoolean(){
-    return std::make_unique<Boolean> (curToken, curTokenIs(TokenType::TRUE));
+std::shared_ptr<Boolean> Parser::parseBoolean(){
+    return std::make_shared<Boolean> (curToken, curTokenIs(TokenType::TRUE));
 }
 
-std::unique_ptr<Expression> Parser::parseGroupedExpression(){
+std::shared_ptr<Expression> Parser::parseGroupedExpression(){
     nextToken();
 
     auto exp = parseExpression(Precedence::LOWEST);
@@ -307,8 +307,8 @@ std::unique_ptr<Expression> Parser::parseGroupedExpression(){
     return exp;
 }
 
-std::unique_ptr<IfExpression>  Parser::parseIfExpression() {
-    auto expression = std::make_unique<IfExpression>(curToken);
+std::shared_ptr<IfExpression>  Parser::parseIfExpression() {
+    auto expression = std::make_shared<IfExpression>(curToken);
 
     if(!expectPeek(TokenType::LPAREN)) {
         return nullptr;
@@ -340,8 +340,8 @@ std::unique_ptr<IfExpression>  Parser::parseIfExpression() {
     return expression;
 }
 
-std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
-    auto block = std::make_unique<BlockStatement>(curToken);
+std::shared_ptr<BlockStatement> Parser::parseBlockStatement(){
+    auto block = std::make_shared<BlockStatement>(curToken);
 
     nextToken();
 
@@ -356,8 +356,8 @@ std::unique_ptr<BlockStatement> Parser::parseBlockStatement(){
     return block;
 }
 
-std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
-    auto lit = std::make_unique<FunctionLiteral>(curToken);
+std::shared_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
+    auto lit = std::make_shared<FunctionLiteral>(curToken);
 
     if(!expectPeek(TokenType::LPAREN)) {
         return nullptr;
@@ -373,8 +373,8 @@ std::unique_ptr<FunctionLiteral> Parser::parseFunctionLiteral(){
 
     return lit;
 }
-std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
-    std::vector<std::unique_ptr<Identifier>> identifiers;
+std::vector<std::shared_ptr<Identifier>>  Parser::parseFunctionParameters() {
+    std::vector<std::shared_ptr<Identifier>> identifiers;
 
     if(peekTokenIs(TokenType::RPAREN)) {
         nextToken();
@@ -383,13 +383,13 @@ std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
 
     nextToken();
 
-    auto ident = std::make_unique<Identifier>(curToken, curToken.Literal);
+    auto ident = std::make_shared<Identifier>(curToken, curToken.Literal);
     identifiers.push_back(std::move(ident));
 
     while (peekTokenIs(TokenType::COMMA)){
         nextToken();  // Consume the COMMA
         nextToken();  // Move to the next token after the COMMA
-        ident = std::make_unique<Identifier>(curToken, curToken.Literal);
+        ident = std::make_shared<Identifier>(curToken, curToken.Literal);
         identifiers.push_back(std::move(ident));
     }
 
@@ -405,14 +405,14 @@ std::vector<std::unique_ptr<Identifier>>  Parser::parseFunctionParameters() {
 
 }
 
-std::unique_ptr<CallExpression> Parser::parseCallExpression(std::unique_ptr<Expression> function){
-    auto exp = std::make_unique<CallExpression>(curToken, function);
+std::shared_ptr<CallExpression> Parser::parseCallExpression(std::shared_ptr<Expression> function){
+    auto exp = std::make_shared<CallExpression>(curToken, function);
     exp->Arguments = parseCallArguments();
     return exp;
 }
 
-std::vector<std::unique_ptr<Expression>> Parser::parseCallArguments(){
-    std::vector<std::unique_ptr<Expression>> args;
+std::vector<std::shared_ptr<Expression>> Parser::parseCallArguments(){
+    std::vector<std::shared_ptr<Expression>> args;
 
     if(peekTokenIs(TokenType::RPAREN)) {
         nextToken();

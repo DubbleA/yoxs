@@ -3,6 +3,8 @@
 #define OBJECT_H
 
 #include <string>
+#include <memory>
+#include <vector>
 #include "../ast/ast.hpp"
 #include "environment.hpp"
 
@@ -47,9 +49,9 @@ public:
 
 class ReturnValue : public Object {
 public:
-    std::unique_ptr<Object> Value;
+    std::shared_ptr<Object> Value;
 
-    ReturnValue(std::unique_ptr<Object> value) : Value(std::move(value)) {}
+    ReturnValue(std::shared_ptr<Object> value) : Value(std::move(value)) {}
     ObjectType Type() override { return RETURN_VALUE_OBJ; }
     std::string Inspect() const override { return Value->Inspect(); }
 };
@@ -65,11 +67,11 @@ public:
 
 class Function : public Object {
 public:
-    std::vector<std::unique_ptr<Identifier>> Parameters;
-    std::unique_ptr<BlockStatement> Body;
-    std::unique_ptr<Environment> Env;
+    std::vector<std::shared_ptr<Identifier>> Parameters;
+    std::shared_ptr<BlockStatement> Body;
+    std::shared_ptr<Environment> Env;
 
-    Function(const std::vector<std::unique_ptr<Identifier>>& parameters, std::unique_ptr<Environment> env, std::unique_ptr<BlockStatement> body)
+    Function(const std::vector<std::shared_ptr<Identifier>>& parameters, std::shared_ptr<Environment> env, std::shared_ptr<BlockStatement> body)
         : Parameters(parameters), Env(std::move(env)), Body(std::move(body)) {}
     ObjectType Type() override { return FUNCTION_OBJ; }
     std::string Inspect() const override;

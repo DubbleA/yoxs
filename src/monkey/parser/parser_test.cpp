@@ -19,7 +19,7 @@ void TestFunctionLiteralParsing();
 void TestFunctionParameterParsing();
 void TestCallExpressionParsing();
 void TestCallExpressionParameterParsing();
-bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& name);
+bool testLetStatement(const std::shared_ptr<Statement>& s, const std::string& name);
 bool testInfixExpression(const Expression& exp, const std::variant<int, bool, std::string>& left, const std::string& operator_, const std::variant<int, bool, std::string>& right);
 bool testLiteralExpression(const Expression& exp, const std::variant<int, bool, std::string>& expected);
 bool testIntegerLiteral(const Expression& il, int value);
@@ -494,7 +494,7 @@ void TestFunctionLiteralParsing() {
 
     Lexer l(input);
     Parser p(l);
-    std::unique_ptr<Program> program = p.ParseProgram();
+    std::shared_ptr<Program> program = p.ParseProgram();
     checkParserErrors(p);
 
     if (program->Statements.size() != 1) {
@@ -557,7 +557,7 @@ void TestFunctionParameterParsing() {
     for (const auto& tt : tests) {
         Lexer l(tt.input);
         Parser p(l);
-        std::unique_ptr<Program> program = p.ParseProgram();
+        std::shared_ptr<Program> program = p.ParseProgram();
         checkParserErrors(p); // Assuming this function is modified for C++
 
         auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
@@ -589,7 +589,7 @@ void TestCallExpressionParsing() {
 
     Lexer l(input);
     Parser p(l);
-    std::unique_ptr<Program> program = p.ParseProgram();
+    std::shared_ptr<Program> program = p.ParseProgram();
     checkParserErrors(p); // Assuming this function is modified for C++
 
     if (program->Statements.size() != 1) {
@@ -642,7 +642,7 @@ void TestCallExpressionParameterParsing() {
     for (const auto& tt : tests) {
         Lexer l(tt.input);
         Parser p(l);
-        std::unique_ptr<Program> program = p.ParseProgram();
+        std::shared_ptr<Program> program = p.ParseProgram();
         checkParserErrors(p); // Assuming this function is adapted for C++
 
         auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
@@ -678,7 +678,7 @@ void TestCallExpressionParameterParsing() {
     }
 }
 
-bool testLetStatement(const std::unique_ptr<Statement>& s, const std::string& name) {
+bool testLetStatement(const std::shared_ptr<Statement>& s, const std::string& name) {
     if (s->TokenLiteral() != "let") {
         std::cerr << "s.TokenLiteral not 'let'. got=" << s->TokenLiteral() << std::endl;
         return false;
