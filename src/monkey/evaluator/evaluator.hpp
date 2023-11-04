@@ -12,6 +12,7 @@ class Evaluator {
 public:
     using NodeVariant = std::variant<
     //Statements
+    std::shared_ptr<Statement>, //extra
     std::shared_ptr<Program>,
     std::shared_ptr<BlockStatement>,
     std::shared_ptr<ExpressionStatement>,
@@ -26,7 +27,7 @@ public:
     std::shared_ptr<IfExpression>,
     std::shared_ptr<Identifier>,
     std::shared_ptr<FunctionLiteral>,
-    std::shared_ptr<CallExpression>
+    std::shared_ptr<CallExpression>,
     >;
     
     static std::shared_ptr<Object> Eval(NodeVariant node, std::shared_ptr<Environment> env);
@@ -34,11 +35,22 @@ public:
 private:
     static std::shared_ptr<Object> evalProgram(std::shared_ptr<Program> program, std::shared_ptr<Environment> env);
     static std::shared_ptr<Object> evalBlockStatement(std::shared_ptr<BlockStatement> block, std::shared_ptr<Environment> env);
-    // ... Other evaluation functions for different node types
-
+    static std::shared_ptr<Boolean> nativeBoolToBooleanObject(bool input);
+    static std::shared_ptr<Object> evalPrefixExpression(const std::string& op, std::shared_ptr<Object> right);
+    static std::shared_ptr<Object> evalInfixExpression(const std::string& op, std::shared_ptr<Object> left, std::shared_ptr<Object> right);
+    static std::shared_ptr<Object> evalBangOperatorExpression(std::shared_ptr<Object> right);
+    static std::shared_ptr<Object> evalMinusPrefixOperatorExpression(std::shared_ptr<Object> right);
+    static std::shared_ptr<Object> evalIntegerInfixExpression(const std::string& op, std::shared_ptr<Object> left, std::shared_ptr<Object> right);
+    static std::shared_ptr<Object> evalIfExpression(std::shared_ptr<IfExpression> ie, std::shared_ptr<Environment> env);
+    static std::shared_ptr<Object> evalIdentifier(std::shared_ptr<Identifier> node, std::shared_ptr<Environment> env);
+    
     static bool isTruthy(std::shared_ptr<Object> obj);
+    static std::shared_ptr<Error> newError(const std::string& format, ...);
     static bool isError(std::shared_ptr<Object> obj);
-    // ... Other helper functions
+    static std::vector<std::shared_ptr<Object>> evalExpressions(std::vector<std::shared_ptr<Expression>> exps, std::shared_ptr<Environment> env);
+    static std::shared_ptr<Object> applyFunction(std::shared_ptr<Object> fn, std::vector<std::shared_ptr<Object>> args);
+    static std::shared_ptr<Environment> extendFunctionEnv(std::shared_ptr<Function> fn, std::vector<std::shared_ptr<Object>> args);
+    static std::shared_ptr<Object> unwrapReturnValue(std::shared_ptr<Object> obj);
 };
 
 struct EvaluatorVisitor {
@@ -132,6 +144,15 @@ struct EvaluatorVisitor {
         return applyFunction(function, args);
     }
 
+    // std::shared_ptr<Object> operator()(std::shared_ptr<Statement> node){
+    //     return nullptr;
+    // }
+
+    template <typename T>
+    std::shared_ptr<Object> operator()(T&) const {
+        // Fallback for other types
+        return nullptr;
+    }
 };
 
 class ObjectConstants {
