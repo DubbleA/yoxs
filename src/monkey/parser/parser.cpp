@@ -291,8 +291,8 @@ std::shared_ptr<InfixExpression> Parser::parseInfixExpression (std::shared_ptr<E
     return expression;
 }
 
-std::shared_ptr<Boolean> Parser::parseBoolean(){
-    return std::make_shared<Boolean> (curToken, curTokenIs(TokenType::TRUE));
+std::shared_ptr<YOXS_AST::Boolean> Parser::parseBoolean(){
+    return std::make_shared<YOXS_AST::Boolean> (curToken, curTokenIs(TokenType::TRUE));
 }
 
 std::shared_ptr<Expression> Parser::parseGroupedExpression(){

@@ -8,6 +8,7 @@
 #include <iterator>
 #include "../token/token.hpp"
 
+namespace YOXS_AST {
 // Forward declarations of all the classes we're going to use.
 class Statement; 
 class Expression;
@@ -184,7 +185,6 @@ public:
 };
 
 std::string join(const std::vector<std::string>&, const std::string&);
-
-
+} // namespace YOXS_AST
 
 #endif //AST_H

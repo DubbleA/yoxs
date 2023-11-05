@@ -2,6 +2,7 @@
 #include <iostream>
 
 //AST Test: This tests the construction of an Abstract Syntax Tree (AST) and its string representation.
+using namespace YOXS_AST;
 
 void TestString() {
     Program program;

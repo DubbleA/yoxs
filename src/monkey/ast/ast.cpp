@@ -1,5 +1,7 @@
 #include "ast.hpp"
 
+namespace YOXS_AST {
+
 std::string Program::TokenLiteral() const {
         if(!Statements.empty()){
             return Statements[0]->TokenLiteral();
@@ -174,3 +176,5 @@ std::string join(const std::vector<std::string>& elements, const std::string& de
             return os.str();
     }
 }
+
+} // namespace YOXS_AST

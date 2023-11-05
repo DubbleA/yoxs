@@ -8,6 +8,7 @@
 #include <memory>
 
 using namespace YOXS_OBJECT;
+using namespace YOXS_AST;
 struct EvaluatorVisitor;
 
 class Evaluator {

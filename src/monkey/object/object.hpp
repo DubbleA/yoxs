@@ -71,11 +71,11 @@ public:
 
 class Function : public Object {
 public:
-    std::vector<std::shared_ptr<Identifier>> Parameters;
-    std::shared_ptr<BlockStatement> Body;
+    std::vector<std::shared_ptr<YOXS_AST::Identifier>> Parameters;
+    std::shared_ptr<YOXS_AST::BlockStatement> Body;
     std::shared_ptr<Environment> Env;
 
-    Function(const std::vector<std::shared_ptr<Identifier>>& parameters, std::shared_ptr<Environment> env, std::shared_ptr<BlockStatement> body)
+    Function(const std::vector<std::shared_ptr<YOXS_AST::Identifier>>& parameters, std::shared_ptr<Environment> env, std::shared_ptr<YOXS_AST::BlockStatement> body)
         : Parameters(parameters), Env(std::move(env)), Body(std::move(body)) {}
     ObjectType Type() override { return FUNCTION_OBJ; }
     std::string Inspect() const override;

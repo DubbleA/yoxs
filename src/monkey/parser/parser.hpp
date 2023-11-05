@@ -11,6 +11,8 @@
 #include "../token/token.hpp"
 #include "../ast/ast.hpp"
 
+using namespace YOXS_AST;
+
 enum Precedence {
     LOWEST = 1,
     EQUALS, // ==
@@ -75,7 +77,7 @@ private:
 
     std::shared_ptr<PrefixExpression> parsePrefixExpression();
     std::shared_ptr<InfixExpression> parseInfixExpression(std::shared_ptr<Expression> left);
-    std::shared_ptr<Boolean> parseBoolean();
+    std::shared_ptr<YOXS_AST::Boolean> parseBoolean();
     std::shared_ptr<Expression> parseGroupedExpression();
     std::shared_ptr<IfExpression> parseIfExpression();
     std::shared_ptr<BlockStatement> parseBlockStatement();
