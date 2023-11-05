@@ -6,7 +6,11 @@
 #include <memory>
 #include <vector>
 #include "../ast/ast.hpp"
-#include "environment.hpp"
+
+namespace YOXS_OBJECT {
+
+class Environment;  // Forward declaration
+class Object;
 
 enum ObjectType {
     NULL_OBJ,
@@ -76,5 +80,9 @@ public:
     ObjectType Type() override { return FUNCTION_OBJ; }
     std::string Inspect() const override;
 };
+
+} //namespace of YOXS_OBJECT
+
+#include "environment.hpp" //have to declare it down here cuz it mess shit up when both headers rely on each other
 
 #endif // OBJECT_H

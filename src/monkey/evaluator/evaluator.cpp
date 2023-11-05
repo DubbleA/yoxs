@@ -1,8 +1,9 @@
 #include "evaluator.hpp"
+//evaluator.cpp
 
 std::shared_ptr<Null> ObjectConstants::NULL_OBJ = std::make_shared<Null>();
-std::shared_ptr<Boolean> ObjectConstants::TRUE = std::make_shared<Boolean>(true);
-std::shared_ptr<Boolean> ObjectConstants::FALSE = std::make_shared<Boolean>(false);
+std::shared_ptr<YOXS_OBJECT::Boolean> ObjectConstants::TRUE = std::make_shared<YOXS_OBJECT::Boolean>(true);
+std::shared_ptr<YOXS_OBJECT::Boolean> ObjectConstants::FALSE = std::make_shared<YOXS_OBJECT::Boolean>(false);
 
 std::shared_ptr<Object> Evaluator::Eval(NodeVariant node, std::shared_ptr<Environment> env) {
     return std::visit(EvaluatorVisitor{env}, node);
@@ -41,7 +42,7 @@ std::shared_ptr<Object> Evaluator::evalBlockStatement(std::shared_ptr<BlockState
     return result;
 }
 
-std::shared_ptr<Boolean> Evaluator::nativeBoolToBooleanObject(bool input){
+std::shared_ptr<YOXS_OBJECT::Boolean> Evaluator::nativeBoolToBooleanObject(bool input){
     return input ? ObjectConstants::TRUE : ObjectConstants::FALSE;
 }
 
@@ -107,7 +108,7 @@ std::shared_ptr<Object> Evaluator::evalIntegerInfixExpression(const std::string&
     else if (op == ">") { return nativeBoolToBooleanObject(leftVal > rightVal); }
     else if (op == "==") { return nativeBoolToBooleanObject(leftVal == rightVal); }
     else if (op == "!=") { return nativeBoolToBooleanObject(leftVal != rightVal); }
-    else {return newError("unknown operator: %s %s %s", left->Type(), op, right->Type()); }
+    else {return newError("unknown operator: %s %s %s", left->Type(), op.c_str(), right->Type()); }
 }
 
 std::shared_ptr<Object> Evaluator::evalIfExpression(std::shared_ptr<IfExpression> ie, std::shared_ptr<Environment> env){
@@ -141,7 +142,7 @@ bool Evaluator::isTruthy(std::shared_ptr<Object> obj){
 //newError function in Go or C++, is used to denote a variadic 
 //function. This means that the function can accept an arbitrary 
 //number of arguments of a specified type. 
-std::shared_ptr<Error> Evaluator::newError(const std::string& format, ...) {
+std::shared_ptr<Error> Evaluator::newError(const std::string format, ...) {
     char buffer[1024];
     va_list args;
     va_start(args, format);
@@ -179,6 +180,7 @@ std::shared_ptr<Object> Evaluator::applyFunction(std::shared_ptr<Object> fn, std
     auto evaluated = Eval(function->Body, extendedEnv);
     return unwrapReturnValue(evaluated);
 }
+
 std::shared_ptr<Environment> Evaluator::extendFunctionEnv(std::shared_ptr<Function> fn, std::vector<std::shared_ptr<Object>> args){
     auto env = std::make_shared<Environment>(fn->Env);
     for (size_t i = 0; i < fn->Parameters.size(); ++i) {
@@ -186,7 +188,8 @@ std::shared_ptr<Environment> Evaluator::extendFunctionEnv(std::shared_ptr<Functi
     }
     return env;
 }
-static std::shared_ptr<Object> unwrapReturnValue(std::shared_ptr<Object> obj){
+
+std::shared_ptr<Object> Evaluator::unwrapReturnValue(std::shared_ptr<Object> obj){
     auto returnValue = std::dynamic_pointer_cast<ReturnValue>(obj);
     if (returnValue) {
         return returnValue->Value;
@@ -194,3 +197,4 @@ static std::shared_ptr<Object> unwrapReturnValue(std::shared_ptr<Object> obj){
     return obj;
 }
 
+//g++ -std=c++17 -Isrc -c src/monkey/evaluator/evaluator.cpp -o evaluator.o

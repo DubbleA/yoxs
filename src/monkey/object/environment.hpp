@@ -7,6 +7,8 @@
 #include "object.hpp"
 #include <memory>
 
+namespace YOXS_OBJECT {
+
 class Environment {
 public:
     std::shared_ptr<Environment> outer;
@@ -16,5 +18,7 @@ public:
     std::shared_ptr<Object> Get(const std::string& name);
     std::shared_ptr<Object> Set(const std::string& name, std::shared_ptr<Object> val);
 };
+
+} //namespace YOXS_OBJECT
 
 #endif // ENVIRONMENT_H

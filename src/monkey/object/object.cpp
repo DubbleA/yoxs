@@ -2,6 +2,8 @@
 #include "object.hpp"
 #include <sstream>
 
+namespace YOXS_OBJECT {
+
 std::string Function::Inspect() const {
     std::ostringstream out;
 
@@ -26,3 +28,5 @@ std::string join(const std::vector<std::string>& vec, const std::string& delimit
     }
     return result.str();
 }
+
+} // namespace YOXS_OBJECT
