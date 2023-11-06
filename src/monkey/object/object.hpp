@@ -36,16 +36,16 @@ public:
     std::string Inspect() const override { return std::to_string(Value); }
 };
 
-class Boolean : public Object {
+class BooleanObject : public Object {
 public:
     bool Value;
 
-    Boolean(bool value) : Value(value) {}
+    BooleanObject(bool value) : Value(value) {}
     ObjectType Type() override { return BOOLEAN_OBJ; }
     std::string Inspect() const override { return Value ? "true" : "false"; }
 };
 
-class Null : public Object {
+class NullObject : public Object {
 public:
     ObjectType Type() override { return NULL_OBJ; }
     std::string Inspect() const override { return "null"; }
@@ -80,6 +80,9 @@ public:
     ObjectType Type() override { return FUNCTION_OBJ; }
     std::string Inspect() const override;
 };
+
+std::string ObjectTypeToString(ObjectType type);
+
 
 } //namespace of YOXS_OBJECT
 

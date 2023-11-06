@@ -1,20 +1,82 @@
 #include "evaluator.hpp"
+
 //evaluator.cpp
 
-std::shared_ptr<Null> ObjectConstants::NULL_OBJ = std::make_shared<Null>();
-std::shared_ptr<YOXS_OBJECT::Boolean> ObjectConstants::TRUE = std::make_shared<YOXS_OBJECT::Boolean>(true);
-std::shared_ptr<YOXS_OBJECT::Boolean> ObjectConstants::FALSE = std::make_shared<YOXS_OBJECT::Boolean>(false);
+std::shared_ptr<NullObject> ObjectConstants::NULL_OBJ = std::make_shared<NullObject>();
+std::shared_ptr<BooleanObject> ObjectConstants::TRUE = std::make_shared<BooleanObject>(true);
+std::shared_ptr<BooleanObject> ObjectConstants::FALSE = std::make_shared<BooleanObject>(false);
 
-std::shared_ptr<Object> Evaluator::Eval(NodeVariant node, std::shared_ptr<Environment> env) {
-    return std::visit(EvaluatorVisitor{env}, node);
+std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_ptr<Environment> env) {
+    // The dynamic_cast will check the actual type of Node and return nullptr if the cast is not valid.
+    if (auto n = std::dynamic_pointer_cast<Program>(node)) {
+        return evalProgram(n, env);
+    } else if (auto n = std::dynamic_pointer_cast<BlockStatement>(node)) {
+        return evalBlockStatement(n, env);
+    } else if (auto n = std::dynamic_pointer_cast<ExpressionStatement>(node)) {
+        return Eval(n->expr, env);
+    } else if (auto n = std::dynamic_pointer_cast<ReturnStatement>(node)) {
+        auto val = Eval(n->ReturnValue, env);
+        if (isError(val)) {
+            return val;
+        }
+        return std::make_shared<ReturnValue>(val);
+    } else if (auto n = std::dynamic_pointer_cast<LetStatement>(node)){
+        auto val = Eval(n->Value, env);
+        if(Evaluator::isError(val)) {
+            return val;
+        }
+        env->Set(n->Name->Value(), val);
+    } else if (auto n = std::dynamic_pointer_cast<IntegerLiteral>(node)){
+        return std::make_shared<Integer>(n->Value);
+    } else if (auto n = std::dynamic_pointer_cast<Boolean>(node)){
+        return nativeBoolToBooleanObject(n->Value);
+    } else if (auto n = std::dynamic_pointer_cast<PrefixExpression>(node)){
+        auto right = Eval(n->Right, env);
+        if(isError(right)) {
+            return right;
+        }
+        return evalPrefixExpression(n->Operator, right);
+    } else if (auto n = std::dynamic_pointer_cast<InfixExpression>(node)){
+        auto left = Eval(n->Left, env);
+        if(isError(left)){
+            return left;
+        }
+
+        auto right = Eval(n->Right, env);
+        if(isError(right)) {
+            return right;
+        }
+        return evalInfixExpression(n->Operator, left, right);
+    } else if (auto n = std::dynamic_pointer_cast<IfExpression>(node)){
+        return evalIfExpression(n, env);
+    } else if (auto n = std::dynamic_pointer_cast<Identifier>(node)){
+        return evalIdentifier(n, env);
+    } else if (auto n = std::dynamic_pointer_cast<FunctionLiteral>(node)){
+        auto params = n->Parameters;
+        auto body = n->Body;
+        return std::make_shared<Function>(params, env, body);
+    } else if (auto n = std::dynamic_pointer_cast<CallExpression>(node)){
+        auto function = Eval(n->Function, env);
+        
+        if(isError(function)){
+            return function;
+        }
+
+        auto args = evalExpressions(n->Arguments, env);
+        if(args.size() == 1 && isError(args[0])){
+            return args[0];
+        }
+        return applyFunction(function, args);
+    }
+    
+    return nullptr;
 }
 
 std::shared_ptr<Object> Evaluator::evalProgram(std::shared_ptr<Program> program, std::shared_ptr<Environment> env){
     std::shared_ptr<Object> result;
 
     for(auto& stmt : program->Statements){
-        result = Eval(NodeVariant{std::move(stmt)}, env);
-        // Check the type of result and handle ReturnValues and Errors
+        result = Eval(stmt, env);
         if(auto returnValue = std::dynamic_pointer_cast<ReturnValue>(result)){
             return returnValue->Value;
         }
@@ -30,7 +92,7 @@ std::shared_ptr<Object> Evaluator::evalBlockStatement(std::shared_ptr<BlockState
     std::shared_ptr<Object> result;
 
     for(auto& stmt: block->Statements) {
-        result = Eval(NodeVariant{std::move(stmt)}, env);
+        result = Eval(stmt, env);
         if(result){
             auto rt = result->Type();
             if(rt == RETURN_VALUE_OBJ or rt == ERROR_OBJ){
@@ -42,7 +104,7 @@ std::shared_ptr<Object> Evaluator::evalBlockStatement(std::shared_ptr<BlockState
     return result;
 }
 
-std::shared_ptr<YOXS_OBJECT::Boolean> Evaluator::nativeBoolToBooleanObject(bool input){
+std::shared_ptr<BooleanObject> Evaluator::nativeBoolToBooleanObject(bool input){
     return input ? ObjectConstants::TRUE : ObjectConstants::FALSE;
 }
 
@@ -54,21 +116,21 @@ std::shared_ptr<Object> Evaluator::evalPrefixExpression(const std::string& op, s
         return evalMinusPrefixOperatorExpression(right);
     }
     else{
-        return newError("unknown operator: %s%s", op.c_str(), right->Type());
+        return newError("unknown operator: %s%s", op.c_str(), ObjectTypeToString(right->Type()).c_str());
     }
 }
 
 std::shared_ptr<Object> Evaluator::evalInfixExpression(const std::string& op, std::shared_ptr<Object> left, std::shared_ptr<Object> right){
     if (left->Type() == INTEGER_OBJ && right->Type() == INTEGER_OBJ) {
         return evalIntegerInfixExpression(op, left, right);
+    } else if (left->Type() != right->Type()) {
+        return newError("type mismatch: %s %s %s", ObjectTypeToString(left->Type()).c_str(), op.c_str(), ObjectTypeToString(right->Type()).c_str());
     } else if (op == "==") {
         return nativeBoolToBooleanObject(left == right);
     } else if (op == "!=") {
         return nativeBoolToBooleanObject(left != right);
-    } else if (left->Type() != right->Type()) {
-        return newError("type mismatch: %s %s %s", left->Type(), op.c_str(), right->Type());
     } else {
-        return newError("unknown operator: %s %s %s", left->Type(), op.c_str(), right->Type());
+        return newError("unknown operator: %s %s %s", ObjectTypeToString(left->Type()).c_str(), op.c_str(), ObjectTypeToString(right->Type()).c_str());
     }
 }
 
@@ -89,7 +151,7 @@ std::shared_ptr<Object> Evaluator::evalBangOperatorExpression(std::shared_ptr<Ob
 
 std::shared_ptr<Object> Evaluator::evalMinusPrefixOperatorExpression(std::shared_ptr<Object> right){
     if(right->Type() != INTEGER_OBJ){
-        return newError("unknown operator: -%s", right->Type());
+        return newError("unknown operator: -%s", ObjectTypeToString(right->Type()).c_str());
     }
 
     int value = std::static_pointer_cast<Integer>(right)->Value;
@@ -108,17 +170,18 @@ std::shared_ptr<Object> Evaluator::evalIntegerInfixExpression(const std::string&
     else if (op == ">") { return nativeBoolToBooleanObject(leftVal > rightVal); }
     else if (op == "==") { return nativeBoolToBooleanObject(leftVal == rightVal); }
     else if (op == "!=") { return nativeBoolToBooleanObject(leftVal != rightVal); }
-    else {return newError("unknown operator: %s %s %s", left->Type(), op.c_str(), right->Type()); }
+    else {return newError("unknown operator: %s %s %s", ObjectTypeToString(left->Type()).c_str(), op.c_str(), ObjectTypeToString(right->Type()).c_str()); }
+    //else {return newError("unknown operator: %s %s %s", left->Inspect().c_str(), op.c_str(), right->Inspect().c_str()); }
 }
 
 std::shared_ptr<Object> Evaluator::evalIfExpression(std::shared_ptr<IfExpression> ie, std::shared_ptr<Environment> env){
-    auto condition = Eval(NodeVariant{std::move(ie->Condition)}, env);
+    auto condition = Eval(ie->Condition, env);
     if(isError(condition)) return condition;
     if(isTruthy(condition)){
-        return Eval(NodeVariant{std::move(ie->Consequence)}, env);
+        return Eval(ie->Consequence, env);
     }
     else if(ie->Alternative){
-        return Eval(NodeVariant{std::move(ie->Alternative)}, env);
+        return Eval(ie->Alternative, env);
     }
     else{
         return ObjectConstants::NULL_OBJ;
@@ -151,6 +214,7 @@ std::shared_ptr<Error> Evaluator::newError(const std::string format, ...) {
     return std::make_shared<Error>(buffer);
 }
 
+
 bool Evaluator::isError(std::shared_ptr<Object> obj){
     if(obj) return obj->Type() == ERROR_OBJ;
     return false;
@@ -159,7 +223,7 @@ bool Evaluator::isError(std::shared_ptr<Object> obj){
 std::vector<std::shared_ptr<Object>> Evaluator::evalExpressions(std::vector<std::shared_ptr<Expression>> exps, std::shared_ptr<Environment> env){
     std::vector<std::shared_ptr<Object>> result;
     for (auto& exp : exps) {
-        auto evaluated = Eval(NodeVariant{std::move(exp)}, env);
+        auto evaluated = Eval(exp, env);
         if (isError(evaluated)) {
             // If an error occurs, return a vector with just that error.
             return {evaluated};
@@ -173,7 +237,7 @@ std::shared_ptr<Object> Evaluator::applyFunction(std::shared_ptr<Object> fn, std
     auto function = std::dynamic_pointer_cast<Function>(fn);
     if (!function) {
         // Not a function object, return an error.
-        return newError("not a function: %s", fn->Type());
+        return newError("not a function: %s", fn->Inspect().c_str());
     }
 
     auto extendedEnv = extendFunctionEnv(function, args);

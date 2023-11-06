@@ -19,4 +19,16 @@ std::string Function::Inspect() const {
     return out.str();
 }
 
+std::string ObjectTypeToString(ObjectType type) {
+    switch (type) {
+        case NULL_OBJ: return "NULL";
+        case ERROR_OBJ: return "ERROR";
+        case INTEGER_OBJ: return "INTEGER";
+        case BOOLEAN_OBJ: return "BOOLEAN";
+        case RETURN_VALUE_OBJ: return "RETURN_VALUE";
+        case FUNCTION_OBJ: return "FUNCTION";
+        default: return "UNKNOWN";
+    }
+}
+
 } // namespace YOXS_OBJECT
