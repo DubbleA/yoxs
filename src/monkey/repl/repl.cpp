@@ -18,7 +18,7 @@ void REPL::tokenStart(std::istream& in, std::ostream& out){
     }
 }
 
-void REPL::Start(std::istream& in, std::ostream& out) {
+void REPL::parserStart(std::istream& in, std::ostream& out){
     std::string line;
 
     while (true) {
@@ -38,6 +38,33 @@ void REPL::Start(std::istream& in, std::ostream& out) {
 
         out << program->String();
         out << "\n";
+    }
+}   
+
+void REPL::Start(std::istream& in, std::ostream& out) {
+    std::string line;
+
+    while (true) {
+        out << PROMPT;
+        if (!std::getline(in, line)) {
+            return; // Exit if there's an error or EOF is encountered
+        }
+
+        Lexer l(line);
+        Parser p(l);
+        
+        auto program = p.ParseProgram();
+        if (!p.Errors().empty()) {
+            printParserErrors(out, p.Errors());
+            continue;
+        }
+
+        auto env = std::make_shared<Environment>();
+        Evaluator evaluator;
+        auto evaluated = evaluator.Eval(program, env);
+        if(evaluated) {
+            out << evaluated->Inspect() << "\n";
+        }
     }
 }
 
