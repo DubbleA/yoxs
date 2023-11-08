@@ -1,44 +1,47 @@
-include ../../commom.mk
-# Directories
-SRC_DIR = src
-PARSER_DIR = $(SRC_DIR)/monkey/parser
-AST_DIR = $(SRC_DIR)/monkey/ast
-LEXER_DIR = $(SRC_DIR)/monkey/lexer
-REPL_DIR = $(SRC_DIR)/monkey/repl
-TOKEN_DIR = $(SRC_DIR)/monkey/token
+# src/monkey/Makefile
 
-# Flags
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I$(SRC_DIR)
+include ../../common.mk
 
-# Default target
-all: build all_tests
+AST_DIR := ast
+EVALUATOR_DIR := evaluator
+LEXER_DIR := lexer
+PARSER_DIR := parser
+TOKEN_DIR := token
+REPL_DIR := repl
+OBJECT_DIR := object
+
+.PHONY: all build clean tests token_test lexer_test repl_test ast_test parser_test evaluator_test
+
+all: build tests
 
 build:
-	@echo "Build done!"
+	@echo "Build commands for monkey components"
+
+tests: token_test lexer_test repl_test ast_test parser_test evaluator_test
 
 token_test:
-	$(CXX) $(CXXFLAGS) $(TOKEN_DIR)/token_test.cpp $(TOKEN_DIR)/token.cpp -o token_test.out
+	$(CXX) $(CXXFLAGS) -I. $(TOKEN_DIR)/token_test.cpp $(TOKEN_DIR)/token.cpp -o token_test.out
 	./token_test.out
 
 lexer_test:
-	$(CXX) $(CXXFLAGS) $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(LEXER_DIR)/lexer_test.cpp -o lexer_test.out
+	$(CXX) $(CXXFLAGS) -I. $(LEXER_DIR)/lexer_test.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp -o lexer_test.out
 	./lexer_test.out
 
 repl_test:
-	$(CXX) $(CXXFLAGS) $(REPL_DIR)/repl.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(REPL_DIR)/repl_test.cpp -o repl_test.out
+	$(CXX) $(CXXFLAGS) -I. $(REPL_DIR)/repl_test.cpp $(REPL_DIR)/repl.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp -o repl_test.out
 	./repl_test.out
 
 ast_test:
-	$(CXX) $(CXXFLAGS) $(AST_DIR)/ast.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast_test.cpp -o ast_test.out
+	$(CXX) $(CXXFLAGS) -I. $(AST_DIR)/ast_test.cpp $(AST_DIR)/ast.cpp $(TOKEN_DIR)/token.cpp -o ast_test.out
 	./ast_test.out
 
 parser_test:
-	$(CXX) $(CXXFLAGS) $(PARSER_DIR)/parser_test.cpp $(PARSER_DIR)/parser.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp -o parser_test.out
+	$(CXX) $(CXXFLAGS) -I. $(PARSER_DIR)/parser_test.cpp $(PARSER_DIR)/parser.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp -o parser_test.out
 	./parser_test.out
 
-all_tests: ast_test lexer_test repl_test token_test
-	@echo "All tests passed!"
+evaluator_test:
+	$(CXX) $(CXXFLAGS) -I. $(EVALUATOR_DIR)/evaluator_test.cpp $(EVALUATOR_DIR)/evaluator.cpp $(OBJECT_DIR)/environment.cpp $(OBJECT_DIR)/object.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp -o evaluator_test.out
+	./evaluator_test.out
 
 clean:
 	rm -f *.out

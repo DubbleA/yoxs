@@ -1,25 +1,28 @@
-include common.mk
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra
 
-API_DIR = server
-DB_DIR = data
-REQ_DIR = .
+# include common.mk
 
-PYTESTFLAGS = -vv --verbose --cov-branch --cov-report term-missing --tb=short -W ignore::FutureWarning
+# API_DIR = server
+# DB_DIR = data
+# REQ_DIR = .
 
-FORCE:
+# PYTESTFLAGS = -vv --verbose --cov-branch --cov-report term-missing --tb=short -W ignore::FutureWarning
 
-prod: all_tests github
+# FORCE:
 
-github: FORCE
-	- git commit -a
-	git push origin master
+# prod: all_tests github
 
-all_tests: FORCE
-	cd $(API_DIR); make tests
-	cd $(DB_DIR); make tests
+# github: FORCE
+# 	- git commit -a
+# 	git push origin master
 
-dev_env: FORCE
-	pip install -r $(REQ_DIR)/requirements-dev.txt
+# all_tests: FORCE
+# 	cd $(API_DIR); make tests
+# 	cd $(DB_DIR); make tests
 
-docs: FORCE
-	cd $(API_DIR); make docs
+# dev_env: FORCE
+# 	pip install -r $(REQ_DIR)/requirements-dev.txt
+
+# docs: FORCE
+# 	cd $(API_DIR); make docs

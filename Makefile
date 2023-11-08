@@ -9,23 +9,23 @@ REQ_DIR = .
 prod: all_tests github
 
 github:
-   - git commit -a
-   git push origin master
+	git commit -a
+	git push origin master
 
+#build all components
 build: 
-	$(MAKE) -C $(SRV_DIR) build
-	$(MAKE) -C $(API_DIR) build
+	$(MAKE) -C src/monkey build
 
-all_tests:
-   cd $(API_DIR); make tests
-   cd $(DB_DIR); make tests
+# Run all tests
+tests:
+	$(MAKE) -C src/monkey tests
+
+# Clean all components
+clean:
+	$(MAKE) -C src/monkey clean
 
 dev_env:
-   pip install -r $(REQ_DIR)/requirements-dev.txt
+	pip install -r $(REQ_DIR)/requirements-dev.txt
 
 docs:
-   cd $(API_DIR); make docs
-
-clean:
-   cd $(API_DIR); make clean
-   cd $(DB_DIR); make clean
+	cd $(API_DIR); make docs
