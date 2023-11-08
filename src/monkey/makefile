@@ -40,15 +40,7 @@ parser_test:
 	./parser_test.out
 
 evaluator_test:
-	$(CXX) $(CXXFLAGS) -I. -c $(PARSER_DIR)/parser.cpp -o parser.o
-	$(CXX) $(CXXFLAGS) -I. -c $(LEXER_DIR)/lexer.cpp -o lexer.o
-	$(CXX) $(CXXFLAGS) -I. -c $(TOKEN_DIR)/token.cpp -o token.o
-	$(CXX) $(CXXFLAGS) -I. -c $(AST_DIR)/ast.cpp -o ast.o
-	$(CXX) $(CXXFLAGS) -I. -c $(OBJECT_DIR)/object.cpp -o object.o
-	$(CXX) $(CXXFLAGS) -I. -c $(OBJECT_DIR)/environment.cpp -o environment.o
-	$(CXX) $(CXXFLAGS) -I. -c $(EVALUATOR_DIR)/evaluator.cpp -o evaluator.o
-	$(CXX) $(CXXFLAGS) -I. -c $(EVALUATOR_DIR)/evaluator_test.cpp -o evaluator_test.o
-	$(CXX) -o evaluator_test.out parser.o lexer.o token.o ast.o object.o environment.o evaluator.o evaluator_test.o
+	$(CXX) $(CXXFLAGS) -I. $(EVALUATOR_DIR)/evaluator_test.cpp $(PARSER_DIR)/parser.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp $(OBJECT_DIR)/object.cpp $(OBJECT_DIR)/environment.cpp $(EVALUATOR_DIR)/evaluator.cpp -o evaluator_test.out
 	./evaluator_test.out
 
 clean:
