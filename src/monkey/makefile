@@ -28,7 +28,7 @@ lexer_test:
 	./lexer_test.out
 
 repl_test:
-	$(CXX) $(CXXFLAGS) -I. $(REPL_DIR)/repl_test.cpp $(REPL_DIR)/repl.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp -o repl_test.out
+	$(CXX) $(CXXFLAGS) -I. $(REPL_DIR)/repl_test.cpp $(REPL_DIR)/repl.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(PARSER_DIR)/parser.cpp $(AST_DIR)/ast.cpp $(EVALUATOR_DIR)/evaluator.cpp $(OBJECT_DIR)/environment.cpp $(OBJECT_DIR)/object.cpp -o repl_test.out
 	./repl_test.out
 
 ast_test:
@@ -40,8 +40,16 @@ parser_test:
 	./parser_test.out
 
 evaluator_test:
-	$(CXX) $(CXXFLAGS) -I. $(EVALUATOR_DIR)/evaluator_test.cpp $(EVALUATOR_DIR)/evaluator.cpp $(OBJECT_DIR)/environment.cpp $(OBJECT_DIR)/object.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(AST_DIR)/ast.cpp -o evaluator_test.out
+	$(CXX) $(CXXFLAGS) -I. -c $(PARSER_DIR)/parser.cpp -o parser.o
+	$(CXX) $(CXXFLAGS) -I. -c $(LEXER_DIR)/lexer.cpp -o lexer.o
+	$(CXX) $(CXXFLAGS) -I. -c $(TOKEN_DIR)/token.cpp -o token.o
+	$(CXX) $(CXXFLAGS) -I. -c $(AST_DIR)/ast.cpp -o ast.o
+	$(CXX) $(CXXFLAGS) -I. -c $(OBJECT_DIR)/object.cpp -o object.o
+	$(CXX) $(CXXFLAGS) -I. -c $(OBJECT_DIR)/environment.cpp -o environment.o
+	$(CXX) $(CXXFLAGS) -I. -c $(EVALUATOR_DIR)/evaluator.cpp -o evaluator.o
+	$(CXX) $(CXXFLAGS) -I. -c $(EVALUATOR_DIR)/evaluator_test.cpp -o evaluator_test.o
+	$(CXX) -o evaluator_test.out parser.o lexer.o token.o ast.o object.o environment.o evaluator.o evaluator_test.o
 	./evaluator_test.out
 
 clean:
-	rm -f *.out
+	rm -f *.out *.o

@@ -131,7 +131,7 @@ if (5 < 10) {
         }
     }
 
-    std::cout << "All tests passed!" << std::endl;
+    std::cout << "All lexer_test.cpp tests passed!" << std::endl;
 
     return 0;
 }

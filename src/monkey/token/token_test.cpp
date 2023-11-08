@@ -22,7 +22,7 @@ int main() {
     assert(LookupIdent("x") == TokenType::IDENT);
     std::cout << "LookupIdent for identifiers test passed!" << std::endl;
 
-    std::cout << "All tests passed!" << std::endl;
+    std::cout << "All token_test.cpp tests passed!" << std::endl;
     return 0;
 }
 //g++ -std=c++17 -Isrc -o token_test src/monkey/token/token_test.cpp src/monkey/token/token.cpp && ./token_test

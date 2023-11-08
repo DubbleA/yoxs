@@ -33,6 +33,7 @@ void TestString() {
 
 int main() {
     TestString();
+    std::cout << "all ast_test.cpp tests passed" << std::endl;
     return 0;
 }
 

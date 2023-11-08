@@ -375,7 +375,7 @@ int main() {
     TestFunctionObject();
     TestFunctionApplication();
     TestEnclosingEnvironments();
-    std::cout << "All tests passed!" << std::endl;
+    std::cout << "All evaluator_test.cpp tests passed!" << std::endl;
     return 0;
 }
 

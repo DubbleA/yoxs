@@ -828,7 +828,7 @@ int main() {
     TestIntegerLiteralExpression();
     TestParsingInfixExpressions();
 
-    std::cout << "All tests passed!" << std::endl;
+    std::cout << "All parser_test.cpp tests passed!" << std::endl;
     return 0;
 }
 

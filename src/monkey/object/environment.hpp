@@ -14,7 +14,7 @@ public:
     std::shared_ptr<Environment> outer;
     std::unordered_map<std::string, std::shared_ptr<Object>> store;
 
-    Environment(std::shared_ptr<Environment> outer = nullptr) : outer(std::move(outer)) {}
+    Environment(std::shared_ptr<Environment> outer = nullptr) : outer(outer) {}
     std::shared_ptr<Object> Get(const std::string& name);
     std::shared_ptr<Object> Set(const std::string& name, std::shared_ptr<Object> val);
 };

@@ -6,6 +6,7 @@
 
 // Function declarations
 void testTokenREPL();
+void testParserREPL();
 void testSimpleExpression();
 void testFunctionDefinition();
 void testLetStatements();
@@ -14,12 +15,9 @@ void testParsingErrors();
 int main() {
     // This stringstream will simulate the in put for the REPL.
     testTokenREPL();
-    testLetStatements(); 
-    testSimpleExpression();
-    testFunctionDefinition();
-    testParsingErrors();
+    testParserREPL();
 
-    std::cout << "All tests passed!" << std::endl;
+    std::cout << "All repl_test.cpp tests passed!" << std::endl;
     return 0;
 }
 
@@ -53,6 +51,15 @@ void testTokenREPL() {
     std::cout << "Token REPL tests passed!" << std::endl;
 }
 
+void testParserREPL() {
+    testLetStatements(); 
+    testSimpleExpression();
+    testFunctionDefinition();
+    testParsingErrors();
+
+    std::cout << "All Parser tests passed!" << std::endl;
+}
+
 // This test checks basic arithmetic and let statements
 void testLetStatements() {
     std::stringstream input;
@@ -61,7 +68,7 @@ void testLetStatements() {
     input << "x + y;\n";
 
     std::stringstream output;
-    REPL::Start(input, output);
+    REPL::parserStart(input, output);
 
     std::string replOutput = output.str();
     //std::cout << "REPL Output for Let Statements: " << replOutput << std::endl;
@@ -76,7 +83,7 @@ void testLetStatements() {
 void testSimpleExpression() {
     std::istringstream input("5 + 5 * 2;");
     std::ostringstream output;
-    REPL::Start(input, output);
+    REPL::parserStart(input, output);
     assert(output.str().find("(5 + (5 * 2))") != std::string::npos);
 
     std::cout << "Simple expression tests passed!" << std::endl;
@@ -85,7 +92,7 @@ void testSimpleExpression() {
 void testFunctionDefinition() {
     std::istringstream input("fn(x, y) { x + y; }");
     std::ostringstream output;
-    REPL::Start(input, output);
+    REPL::parserStart(input, output);
     //std::cout << "Function Definition REPL Output: " << output.str() << std::endl;
     //std::string replOutput = output.str();
     assert(output.str().find("fn(x, y) (x + y)") != std::string::npos);
@@ -95,7 +102,7 @@ void testFunctionDefinition() {
 void testParsingErrors() {
     std::istringstream input("let x 5;");
     std::ostringstream output;
-    REPL::Start(input, output);
+    REPL::parserStart(input, output);
     std::string expectedErrorOutput = 
         "Woops! We ran into an error:\n"
         "\texpected next token to be =, got INT instead\n"; 
@@ -104,4 +111,4 @@ void testParsingErrors() {
     std::cout << "Parsing error tests passed!" << std::endl;
 }
 
-//g++ -std=c++17 -Isrc -o repl_test src/monkey/repl/repl.cpp src/monkey/lexer/lexer.cpp src/monkey/token/token.cpp src/monkey/parser/parser.cpp src/monkey/ast/ast.cpp src/monkey/repl/repl_test.cpp && ./repl_test
+//g++ -std=c++17 -Isrc -o repl_test src/monkey/repl/repl.cpp src/monkey/lexer/lexer.cpp src/monkey/token/token.cpp src/monkey/parser/parser.cpp src/monkey/ast/ast.cpp src/monkey/object/object.cpp src/monkey/evaluator/evaluator.cpp src/monkey/object/environment.cpp src/monkey/repl/repl_test.cpp && ./repl_test
