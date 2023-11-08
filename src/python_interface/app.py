@@ -15,3 +15,8 @@ def run_custom_compiler(code):
     return "Output" + code 
 if __name__ == '__main__':
     app.run(debug=True)
+
+def use_example_code():
+    # Dummy function
+if __name__ == '__main__':
+    app.run(debug=True)
