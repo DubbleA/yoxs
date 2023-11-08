@@ -106,7 +106,7 @@ std::string PrefixExpression::String() const {
     return "(" + Operator + Right->String() + ")";
 }
 
-InfixExpression::InfixExpression(const Token& tok, const std::string& op, std::shared_ptr<Expression> leftExp) : token(tok), Operator(op), Left(std::move(leftExp)) {}
+InfixExpression::InfixExpression(const Token& tok, const std::string& op, std::shared_ptr<Expression> leftExp) : token(tok), Left(leftExp), Operator(op) {}
 
 std::string InfixExpression::TokenLiteral() const {
     return token.Literal;
@@ -147,7 +147,7 @@ std::string FunctionLiteral::String() const {
     return result;
 }
 
-CallExpression::CallExpression (const Token& t, std::shared_ptr<Expression>& f) : token(t), Function(std::move(f)){}
+CallExpression::CallExpression (const Token& t, std::shared_ptr<Expression>& f) : token(t), Function(f){}
 
 std::string CallExpression::TokenLiteral() const {
     return token.Literal;

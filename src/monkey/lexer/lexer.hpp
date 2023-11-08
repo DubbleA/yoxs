@@ -7,8 +7,8 @@
 class Lexer {
 private:
     std::string input;
-    int position;         // current position in input (points to current char)
-    int readPosition;     // current reading position in input (after current char)
+    std::string::size_type position;         // current position in input (points to current char)
+    std::string::size_type readPosition;     // current reading position in input (after current char)
     char ch;              // current char under examination
 
     void readChar();

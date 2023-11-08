@@ -23,6 +23,7 @@ enum ObjectType {
 
 class Object {
 public:
+    virtual ~Object() = default; // Virtual destructor
     virtual ObjectType Type() = 0;
     virtual std::string Inspect() const = 0;
 };
@@ -72,8 +73,8 @@ public:
 class Function : public Object {
 public:
     std::vector<std::shared_ptr<YOXS_AST::Identifier>> Parameters;
-    std::shared_ptr<YOXS_AST::BlockStatement> Body;
     std::shared_ptr<Environment> Env;
+    std::shared_ptr<YOXS_AST::BlockStatement> Body;
 
     Function(const std::vector<std::shared_ptr<YOXS_AST::Identifier>>& parameters, std::shared_ptr<Environment> env, std::shared_ptr<YOXS_AST::BlockStatement> body)
         : Parameters(parameters), Env(env), Body(body) {}
