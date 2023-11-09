@@ -9,7 +9,8 @@ std::unordered_map<TokenType, Precedence> precedences = {
     { TokenType::MINUS, SUM},
     { TokenType::SLASH, PRODUCT},
     { TokenType::ASTERISK, PRODUCT},
-    { TokenType::LPAREN, CALL}
+    { TokenType::LPAREN, CALL},
+    { TokenType::LBRACKET, INDEX}
 
 };
 
@@ -46,34 +47,44 @@ Parser::Parser(Lexer& l) : lexer(&l) {
     registerPrefix(TokenType::FUNCTION, [this]() -> std::shared_ptr<Expression> {
         return this->parseFunctionLiteral();
     });
+    registerPrefix(TokenType::LBRACKET, [this]() -> std::shared_ptr<Expression> {
+        return this->parseArrayLiteral();
+    });
+    registerPrefix(TokenType::LBRACE, [this]() -> std::shared_ptr<Expression> {
+        return this->parseHashLiteral();
+    });
+
 
     // Register infix functions using lambda functions for explicit casting
     registerInfix(TokenType::PLUS, [this](std::shared_ptr<Expression> left) -> std::shared_ptr<Expression> {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::MINUS, [this](std::shared_ptr<Expression> left) -> std::shared_ptr<Expression> {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::SLASH, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::ASTERISK, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::EQ, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::NOT_EQ, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::LT, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::GT, [this](std::shared_ptr<Expression> left) {
-        return this->parseInfixExpression(std::move(left));
+        return this->parseInfixExpression(left);
     });
     registerInfix(TokenType::LPAREN, [this](std::shared_ptr<Expression> function) {
-        return this->parseCallExpression(std::move(function));
+        return this->parseCallExpression(function);
+    });
+    registerInfix(TokenType::LPAREN, [this](std::shared_ptr<Expression> idx) {
+        return this->parseIndexExpression(idx);
     });
 
     // Read two tokens, so curToken and peekToken are both set
@@ -150,7 +161,7 @@ std::shared_ptr<Program> Parser::ParseProgram() {
 
     while(!curTokenIs(TokenType::EOF_TOKEN)) {
         auto stmt = parseStatement();
-        if(stmt) program->Statements.push_back(std::move(stmt));
+        if(stmt) program->Statements.push_back(stmt);
         nextToken();
     }
 
@@ -242,9 +253,7 @@ std::shared_ptr<Expression> Parser::parseExpression(Precedence pVal){
         nextToken();
 
         auto infix = infixIt->second;
-        leftExp = (infix)(std::move(leftExp));
-        //std::move is used to transfer the ownership of the std::shared_ptr to the function
-    }
+        leftExp = (infix)(leftExp);    }
 
     return leftExp;
 
@@ -282,7 +291,7 @@ std::shared_ptr<PrefixExpression>  Parser::parsePrefixExpression(){
 }
 
 std::shared_ptr<InfixExpression> Parser::parseInfixExpression (std::shared_ptr<Expression> left){
-    auto expression = std::make_shared<InfixExpression>(curToken, curToken.Literal, std::move(left));
+    auto expression = std::make_shared<InfixExpression>(curToken, curToken.Literal, left);
     auto precedence = curPrecedence();
 
     nextToken();
@@ -348,7 +357,7 @@ std::shared_ptr<BlockStatement> Parser::parseBlockStatement(){
     while (!curTokenIs(TokenType::RBRACE) && !curTokenIs(TokenType::EOF_TOKEN)) {
         auto stmt = parseStatement();
         if (stmt) {
-            block->Statements.push_back(std::move(stmt));
+            block->Statements.push_back(stmt);
         }
         nextToken();
     }
@@ -384,13 +393,13 @@ std::vector<std::shared_ptr<Identifier>>  Parser::parseFunctionParameters() {
     nextToken();
 
     auto ident = std::make_shared<Identifier>(curToken, curToken.Literal);
-    identifiers.push_back(std::move(ident));
+    identifiers.push_back(ident);
 
     while (peekTokenIs(TokenType::COMMA)){
         nextToken();  // Consume the COMMA
         nextToken();  // Move to the next token after the COMMA
         ident = std::make_shared<Identifier>(curToken, curToken.Literal);
-        identifiers.push_back(std::move(ident));
+        identifiers.push_back(ident);
     }
 
     if (!expectPeek(TokenType::RPAREN)) {
@@ -407,34 +416,69 @@ std::vector<std::shared_ptr<Identifier>>  Parser::parseFunctionParameters() {
 
 std::shared_ptr<CallExpression> Parser::parseCallExpression(std::shared_ptr<Expression> function){
     auto exp = std::make_shared<CallExpression>(curToken, function);
-    exp->Arguments = parseCallArguments();
+    exp->Arguments = parseExpressionList(TokenType::RPAREN);
     return exp;
 }
 
-std::vector<std::shared_ptr<Expression>> Parser::parseCallArguments(){
-    std::vector<std::shared_ptr<Expression>> args;
-
-    if(peekTokenIs(TokenType::RPAREN)) {
+std::vector<std::shared_ptr<Expression>> Parser::parseExpressionList(const TokenType& end){
+    std::vector<std::shared_ptr<Expression>> list;
+    if(peekTokenIs(end)) {
         nextToken();
-        return args;
+        return list;
     }
-
     nextToken();
-    args.push_back(parseExpression(Precedence::LOWEST));
-
+    list.push_back(parseExpression(Precedence::LOWEST));
     while(peekTokenIs(TokenType::COMMA)){  //todo check this
         nextToken(); // consume the COMMA
         nextToken(); // move to the next token after the COMMA
-        args.push_back(parseExpression(Precedence::LOWEST));
+        list.push_back(parseExpression(Precedence::LOWEST));
     }
 
-    if(!expectPeek(TokenType::RPAREN)){
+    if(!expectPeek(end)){
         // Return an empty vector to indicate an error or unexpected input
-        args.clear();
-        return args;
+        list.clear();
+        return list;
     }
 
-    return args;
+    return list;
+}
+
+std::shared_ptr<ArrayLiteral> Parser::parseArrayLiteral(){
+    auto array = std::make_shared<ArrayLiteral>(curToken);
+
+    array->Elements = parseExpressionList(TokenType::RBRACKET);
+
+    return array;
+}
+
+std::shared_ptr<IndexExpression> Parser::parseIndexExpression(std::shared_ptr<Expression> left){
+    auto exp = std::make_shared<IndexExpression>(curToken, left);
+    nextToken();
+    exp->Index = parseExpression(Precedence::LOWEST);
+
+    if(!expectPeek(TokenType::RBRACKET)) return nullptr;
+
+    return exp;
+}
+
+std::shared_ptr<HashLiteral> Parser::parseHashLiteral(){
+    auto hash = std::make_shared<HashLiteral>(curToken);
+    while(!peekTokenIs(TokenType::RBRACE)) {
+        nextToken();
+        auto key = parseExpression(Precedence::LOWEST);
+
+        if(!expectPeek(TokenType::COLON)) return nullptr;
+
+        nextToken();
+        auto value = parseExpression(Precedence::LOWEST);
+        hash->Pairs[key] = value;
+
+        if(!peekTokenIs(TokenType::RBRACE) && !expectPeek(TokenType::COMMA)) return nullptr;
+    }
+
+    if(!expectPeek(TokenType::RBRACE)) return nullptr;
+
+    return hash;
 }
 
 std::vector<std::string> Parser::Errors() const {

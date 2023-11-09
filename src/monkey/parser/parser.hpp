@@ -20,7 +20,8 @@ enum Precedence {
     SUM, // + 
     PRODUCT, // * 
     PREFIX, //-X or !X
-    CALL //myFunction(X)
+    CALL, //myFunction(X)
+    INDEX // array[index]
 };
 
 extern std::unordered_map<TokenType, Precedence> precedences;
@@ -84,7 +85,11 @@ private:
     std::shared_ptr<FunctionLiteral> parseFunctionLiteral();
     std::vector<std::shared_ptr<Identifier>> parseFunctionParameters();     
     std::shared_ptr<CallExpression> parseCallExpression(std::shared_ptr<Expression> function);
-    std::vector<std::shared_ptr<Expression>> parseCallArguments();
+    std::vector<std::shared_ptr<Expression>> parseExpressionList(const TokenType& end);
+    std::shared_ptr<ArrayLiteral> parseArrayLiteral();
+    std::shared_ptr<IndexExpression> parseIndexExpression(std::shared_ptr<Expression> left);
+    std::shared_ptr<HashLiteral> parseHashLiteral();
+    
 
 };
 

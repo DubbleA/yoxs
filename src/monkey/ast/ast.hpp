@@ -207,6 +207,7 @@ public:
 };
 
 class IndexExpression : public Expression {
+public:
     IndexExpression(const Token& t, std::shared_ptr<Expression> l, std::shared_ptr<Expression> i);
     Token token; //the [ token
     std::shared_ptr<Expression> Left;
@@ -218,6 +219,7 @@ class IndexExpression : public Expression {
 };
 
 class HashLiteral : public Expression {
+public:
     Token token;
     std::map<std::shared_ptr<Expression>, std::shared_ptr<Expression>> Pairs;
     
