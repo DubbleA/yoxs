@@ -27,6 +27,10 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+"foobar"
+"foo bar"
+[1, 2];
+{"foo": "bar"}
 )";
 
     struct Test {
@@ -108,6 +112,19 @@ if (5 < 10) {
         {TokenType::NOT_EQ, "!="},
         {TokenType::INT, "9"},
         {TokenType::SEMICOLON, ";"},
+        {TokenType::STRING, "foobar"},
+		{TokenType::STRING, "foo bar"},
+		{TokenType::LBRACKET, "["},
+		{TokenType::INT, "1"},
+		{TokenType::COMMA, ","},
+		{TokenType::INT, "2"},
+		{TokenType::RBRACKET, "]"},
+		{TokenType::SEMICOLON, ";"},
+		{TokenType::LBRACE, "{"},
+		{TokenType::STRING, "foo"},
+		{TokenType::COLON, ":"},
+		{TokenType::STRING, "bar"},
+		{TokenType::RBRACE, "}"},
         {TokenType::EOF_TOKEN, ""}
     };
 
