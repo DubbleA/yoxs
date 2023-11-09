@@ -6,6 +6,7 @@
 #include <sstream>
 #include <memory>
 #include <iterator>
+#include <map>
 #include "../token/token.hpp"
 
 namespace YOXS_AST {
@@ -174,7 +175,7 @@ public:
 
 class CallExpression : public Expression {
 public:
-    CallExpression(const Token& t, std::shared_ptr<Expression>& f);
+    CallExpression(const Token& t, std::shared_ptr<Expression> f);
     Token token; // The '(' token
     std::shared_ptr<Expression> Function; // Identifier or FunctionLiteral
     std::vector<std::shared_ptr<Expression>> Arguments;
@@ -200,7 +201,29 @@ public:
     ArrayLiteral(const Token& t);
     std::vector<std::shared_ptr<Expression>> Elements;
 
-    void expressionNode() override;
+    void expressionNode() override {}
+    std::string TokenLiteral() const override;
+    std::string String() const override;
+};
+
+class IndexExpression : public Expression {
+    IndexExpression(const Token& t, std::shared_ptr<Expression> l, std::shared_ptr<Expression> i);
+    Token token; //the [ token
+    std::shared_ptr<Expression> Left;
+    std::shared_ptr<Expression> Index;
+
+    void expressionNode() override {}
+    std::string TokenLiteral() const override;
+    std::string String() const override;
+};
+
+class HashLiteral : public Expression {
+    Token token;
+    std::map<std::shared_ptr<Expression>, std::shared_ptr<Expression>> Pairs;
+    
+    void expressionNode() override {}
+
+    HashLiteral(const Token& t);
     std::string TokenLiteral() const override;
     std::string String() const override;
 };

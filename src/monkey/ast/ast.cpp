@@ -147,7 +147,7 @@ std::string FunctionLiteral::String() const {
     return result;
 }
 
-CallExpression::CallExpression (const Token& t, std::shared_ptr<Expression>& f) : token(t), Function(f){}
+CallExpression::CallExpression (const Token& t, std::shared_ptr<Expression> f) : token(t), Function(f){}
 
 std::string CallExpression::TokenLiteral() const {
     return token.Literal;
@@ -187,6 +187,33 @@ std::string ArrayLiteral::String() const {
     }
     out += "[" + join(elems, ", ") + "]";
     return out;
+}
+
+IndexExpression::IndexExpression (const Token& t, std::shared_ptr<Expression> l, std::shared_ptr<Expression> i) : token(t), Left(l), Index(i) {}
+
+std::string IndexExpression::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string IndexExpression::String() const {
+    std::string out = "(" + Left->String() + "[" + Index->String() + "])";
+    return out;
+}
+
+HashLiteral::HashLiteral(const Token& t) : token(t) {}
+std::string HashLiteral::TokenLiteral() const {
+    return token.Literal;
+}
+std::string HashLiteral::String() const {
+
+    std::vector<std::string> pairs;
+    for(const auto& key: Pairs){
+        pairs.push_back(key.first->String() + ":" + key.second->String());
+    }
+
+    std::string result = "{" + join(pairs, ", ") + "}";
+    return result;
+    
 }
 
 std::string join(const std::vector<std::string>& elements, const std::string& delimiter) {
