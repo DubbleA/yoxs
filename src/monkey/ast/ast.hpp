@@ -184,7 +184,29 @@ public:
     void expressionNode() override {}
 };
 
+class StringLiteral : public Expression {
+public: 
+    StringLiteral(const Token& t);
+    Token token;
+    std::string Value;
+    void expressionNode() override {}
+    std::string TokenLiteral() const override;
+    std::string String() const override;
+};
+
+class ArrayLiteral : public Expression {
+public:
+    Token token;
+    ArrayLiteral(const Token& t);
+    std::vector<std::shared_ptr<Expression>> Elements;
+
+    void expressionNode() override;
+    std::string TokenLiteral() const override;
+    std::string String() const override;
+};
+
 std::string join(const std::vector<std::string>&, const std::string&);
+
 } // namespace YOXS_AST
 
 #endif //AST_H

@@ -163,6 +163,32 @@ std::string CallExpression::String() const {
     return result;
 }
 
+StringLiteral::StringLiteral (const Token& t) : token(t) {}
+
+std::string StringLiteral::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string StringLiteral::String () const {
+    return token.Literal;
+}
+
+ArrayLiteral::ArrayLiteral(const Token& t) : token(t) {}
+
+std::string ArrayLiteral::TokenLiteral() const {
+    return token.Literal;
+}
+
+std::string ArrayLiteral::String() const {
+    std::string out = "";
+    std::vector<std::string> elems;
+    for(const auto& elem : Elements){
+        elems.push_back(elem->String());
+    }
+    out += "[" + join(elems, ", ") + "]";
+    return out;
+}
+
 std::string join(const std::vector<std::string>& elements, const std::string& delimiter) {
     switch (elements.size()) {
         case 0:
