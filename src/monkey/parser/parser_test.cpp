@@ -373,6 +373,14 @@ void TestOperatorPrecedenceParsing() {
 		{
 			"add(a + b + c * d / f + g)",
 			"add((((a + b) + ((c * d) / f)) + g))",
+		},
+        {
+			"a * [1, 2, 3, 4][b * c] * d",
+			"((a * ([1, 2, 3, 4][(b * c)])) * d)",
+		},
+		{
+			"add(a * b[2], b[1], 2 * [1, 2][1])",
+			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
 		}
     };
 
@@ -487,6 +495,72 @@ void TestIfExpression() {
         std::cerr << "exp.Alternative.Statements was not nullptr. got some content." << std::endl;
         return;
     }
+}
+
+void TestIfElseExpression() {
+    std::string input = "if (x < y) { x } else { y }";
+
+    Lexer l(input);
+    Parser p(l);
+    std::shared_ptr<Program> program = p.ParseProgram();
+    checkParserErrors(p);
+
+    if (program->Statements.size() != 1) {
+        std::cerr << "program.Statements does not contain 1 statements. got=" 
+                  << program->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* stmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    if (!stmt) {
+        std::cerr << "program.Statements[0] is not ExpressionStatement. got=" 
+                  << typeid(program->Statements[0].get()).name() << std::endl;
+        return;
+    }
+
+    auto* exp = dynamic_cast<IfExpression*>(stmt->expr.get());
+    if (!exp) {
+        std::cerr << "stmt.Expression is not IfExpression. got=" 
+                  << typeid(stmt->expr.get()).name() << std::endl;
+        return;
+    }
+
+    if (!testInfixExpression(*exp->Condition, "x", "<", "y")) {
+        return;
+    }
+
+    if (exp->Consequence->Statements.size() != 1) {
+        std::cerr << "consequence is not 1 statements. got=" 
+                  << exp->Consequence->Statements.size() << std::endl;
+        return;
+    }
+
+    auto* consequence = dynamic_cast<ExpressionStatement*>(exp->Consequence->Statements[0].get());
+    if (!consequence) {
+        std::cerr << "Statements[0] is not ExpressionStatement. got=" 
+                  << typeid(exp->Consequence->Statements[0].get()).name() << std::endl;
+        return;
+    }
+
+    if (!testIdentifier(*consequence->expr, "x")) {
+        return;
+    }
+
+    if (exp->Alternative && exp->Alternative->Statements.size() != 1) {
+        std::cerr << "exp.Alternative.Statements does not contain 1 statements. got=" 
+                  + std::to_string(exp->Alternative->Statements.size()) << std::endl;
+        return;
+    }
+
+    auto* alternative = dynamic_cast<ExpressionStatement*>(exp->Alternative->Statements[0].get());
+    if(!alternative) {
+        std::cerr << "Statements[0] is not ast.ExpressionStatement. got="
+                  << typeid(exp->Alternative->Statements[0].get()).name() << std::endl;
+    }
+
+    if (!testIdentifier(*alternative->expr, "y")) {
+		return;
+	}
 }
 
 void TestFunctionLiteralParsing() {

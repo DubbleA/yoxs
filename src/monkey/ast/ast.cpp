@@ -189,7 +189,7 @@ std::string ArrayLiteral::String() const {
     return out;
 }
 
-IndexExpression::IndexExpression (const Token& t, std::shared_ptr<Expression> l, std::shared_ptr<Expression> i) : token(t), Left(l), Index(i) {}
+IndexExpression::IndexExpression (const Token& t, std::shared_ptr<Expression> l) : token(t), Left(l) {}
 
 std::string IndexExpression::TokenLiteral() const {
     return token.Literal;
@@ -213,7 +213,7 @@ std::string HashLiteral::String() const {
 
     std::string result = "{" + join(pairs, ", ") + "}";
     return result;
-    
+
 }
 
 std::string join(const std::vector<std::string>& elements, const std::string& delimiter) {

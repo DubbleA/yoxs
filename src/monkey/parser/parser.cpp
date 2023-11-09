@@ -83,7 +83,7 @@ Parser::Parser(Lexer& l) : lexer(&l) {
     registerInfix(TokenType::LPAREN, [this](std::shared_ptr<Expression> function) {
         return this->parseCallExpression(function);
     });
-    registerInfix(TokenType::LPAREN, [this](std::shared_ptr<Expression> idx) {
+    registerInfix(TokenType::LBRACKET, [this](std::shared_ptr<Expression> idx) {
         return this->parseIndexExpression(idx);
     });
 

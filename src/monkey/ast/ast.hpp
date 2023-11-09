@@ -208,7 +208,7 @@ public:
 
 class IndexExpression : public Expression {
 public:
-    IndexExpression(const Token& t, std::shared_ptr<Expression> l, std::shared_ptr<Expression> i);
+    IndexExpression(const Token& t, std::shared_ptr<Expression> l);
     Token token; //the [ token
     std::shared_ptr<Expression> Left;
     std::shared_ptr<Expression> Index;
