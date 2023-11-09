@@ -9,22 +9,25 @@
     <h1>Run Your Code</h1>
 
     <div class="module">
-        Choose an example program:
-        <select id="example" name="example" onchange="selectExample()">
+        
+        <label for="exampleCode">Choose an example program:</label> 
+        <select id="exampleCode" name="exampleCode" onchange="selectExample(value)">
 
             <option value="none" selected></option>
             
-            <option value="helloWorld">helloWorld</option>
+            <option value="helloWorld">Hello World</option>
 
             <option value="simpleLoop">Simple Loop</option>
 
             <option value="bubbleSort">Bubble Sort</option>
 
-            <option value="binarySearchTree">Binary Search Tree</option>
+            <option value="findFactorial">Find Factorial</option>
 
         </select>
+        
 
         <br> <br>
+
 
         <form method="POST">
             <textarea name="code" rows="10" cols="50">{{ code }}</textarea><br>
@@ -37,9 +40,7 @@
     </div>
     
     <!--<script>
-        var sortedElement = document.getElementById('example')
-
-    </script>-->
-    
+    </script>
+-->
 </body>
 </html>
