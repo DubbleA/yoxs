@@ -15,6 +15,7 @@ private:
     char peekChar() const;
     std::string readIdentifier();
     std::string readNumber();
+    std::string readString();
     void skipWhitespace();
     static bool isLetter(char ch);
     static bool isDigit(char ch);

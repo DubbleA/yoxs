@@ -11,6 +11,7 @@ enum class TokenType {
     // Identifiers + literals
     IDENT,  // add, foobar, x, y, ...
     INT,    // 1343456
+    STRING, // "foobar"
 
     // Operators
     ASSIGN, // =
@@ -19,18 +20,24 @@ enum class TokenType {
     BANG, // !
     ASTERISK, //* 
     SLASH,
+
     LT,
     GT,
+
     EQ,
     NOT_EQ,
 
     // Delimiters
     COMMA,
     SEMICOLON,
+    COLON, 
+
     LPAREN,
     RPAREN,
     LBRACE,
     RBRACE,
+    LBRACKET,
+    RBRACKET,
 
     // Keywords
     FUNCTION, //fn

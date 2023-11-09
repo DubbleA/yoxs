@@ -24,24 +24,35 @@ std::string TokenTypeToString(TokenType type) {
     switch (type) {
         case TokenType::ILLEGAL:      return "ILLEGAL";
         case TokenType::EOF_TOKEN:    return "EOF";
+
         case TokenType::IDENT:        return "IDENT";
         case TokenType::INT:          return "INT";
+        case TokenType::STRING:       return "STRING";
+
         case TokenType::ASSIGN:       return "=";
         case TokenType::PLUS:         return "+";
         case TokenType::MINUS:        return "-";
         case TokenType::BANG:         return "!";
         case TokenType::ASTERISK:     return "*";
         case TokenType::SLASH:        return "/";
+
         case TokenType::LT:           return "<";
         case TokenType::GT:           return ">";
+
         case TokenType::EQ:           return "==";
         case TokenType::NOT_EQ:       return "!=";
+
         case TokenType::COMMA:        return ",";
         case TokenType::SEMICOLON:    return ";";
+        case TokenType::COLON:        return ":";
+
         case TokenType::LPAREN:       return "(";
         case TokenType::RPAREN:       return ")";
         case TokenType::LBRACE:       return "{";
         case TokenType::RBRACE:       return "}";
+        case TokenType::LBRACKET:     return "[";
+        case TokenType::RBRACKET:     return "]";
+
         case TokenType::FUNCTION:     return "FUNCTION";
         case TokenType::LET:          return "LET";
         case TokenType::TRUE:         return "TRUE";

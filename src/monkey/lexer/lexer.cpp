@@ -37,6 +37,15 @@ std::string Lexer::readNumber() {
     return input.substr(startPosition, position - startPosition);
 }
 
+std::string Lexer::readString(){
+    int startPosition = position + 1;
+    do {
+        readChar();
+    }
+    while (ch != '"' && ch != 0);
+    return input.substr(startPosition, position - startPosition);
+}
+
 void Lexer::skipWhitespace() {
     while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
         readChar();
@@ -102,6 +111,9 @@ Token Lexer::NextToken() {
         case ';':
             tok = newToken(TokenType::SEMICOLON, ch);
             break;
+        case ':':
+            tok = newToken(TokenType::COLON, ch);
+            break;
         case ',':
             tok = newToken(TokenType::COMMA, ch);
             break;
@@ -116,6 +128,16 @@ Token Lexer::NextToken() {
             break;
         case ')':
             tok = newToken(TokenType::RPAREN, ch);
+            break;
+        case '[':
+            tok = newToken(TokenType::LBRACKET, ch);
+            break;
+        case ']':
+            tok = newToken(TokenType::RBRACKET, ch);
+            break;
+        case '"':
+            tok.Type = TokenType::STRING;
+            tok.Literal = readString();
             break;
         case 0:
             tok = Token(TokenType::EOF_TOKEN, "");
