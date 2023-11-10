@@ -23,10 +23,19 @@ std::string ObjectTypeToString(ObjectType type) {
     switch (type) {
         case NULL_OBJ: return "NULL";
         case ERROR_OBJ: return "ERROR";
+
         case INTEGER_OBJ: return "INTEGER";
         case BOOLEAN_OBJ: return "BOOLEAN";
+        case STRING_OBJ: return "STRING";
+
         case RETURN_VALUE_OBJ: return "RETURN_VALUE";
+
         case FUNCTION_OBJ: return "FUNCTION";
+        case BUILTIN_OBJ: return "BUILTIN";
+
+        case ARRAY_OBJ: return "ARRAY";
+        case HASH_OBJ: return "HASH";
+        
         default: return "UNKNOWN";
     }
 }
