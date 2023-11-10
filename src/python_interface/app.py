@@ -13,8 +13,6 @@ def index():
 def run_custom_compiler(code):
     # Dummy function
     return "Output" + code 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 def selectExample(value):
     if value == "helloWorld":
