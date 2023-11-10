@@ -34,17 +34,28 @@ enum ObjectType {
     HASH_OBJ
 };
 
+std::string ObjectTypeToString(ObjectType type);
+
 class HashKey {
 public:
     ObjectType Type;
     int64_t Value;
     HashKey(const ObjectType& t, const int64_t& v) : Type(t), Value(v) {}
+
+    bool operator ==(const HashKey& rhs) const {
+        return (ObjectTypeToString(this->Type) == ObjectTypeToString(rhs.Type)) && (this->Value == rhs.Value);
+    }
+
+    bool operator !=(const HashKey& rhs) const {
+        return !(*this == rhs);
+    }
 };
 
 class Hashable {
 public:
     virtual ~Hashable() = default;
     virtual HashKey keyHash() const = 0;
+
 };
 
 class Object {
@@ -174,8 +185,6 @@ public:
         return out.str();
     }
 };
-
-std::string ObjectTypeToString(ObjectType type);
 
 
 } //namespace of YOXS_OBJECT
