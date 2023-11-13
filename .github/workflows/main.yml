@@ -16,28 +16,31 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Setup C++ environment
-      run: sudo apt-get install -y g++
+      run: sudo apt-get update && sudo apt-get install -y g++
 
     - name: Build project
-      run: make build
+      run: make -C src/monkey build
 
     - name: Run Token tests
-      run: make token_test
+      run: make -C src/monkey token_test
 
     - name: Run Lexer tests
-      run: make lexer_test
-
-    - name: Run REPL tests
-      run: make repl_test
+      run: make -C src/monkey lexer_test
 
     - name: Run AST tests
-      run: make ast_test
+      run: make -C src/monkey ast_test
 
     - name: Run Parser tests
-      run: make parser_test
-      
-    - name: Build project
-      run: make build
+      run: make -C src/monkey parser_test
+
+    - name: Run Object tests
+      run: make -C src/monkey object_test
+
+    - name: Run Evaluator tests
+      run: make -C src/monkey evaluator_test
+
+    - name: Run REPL tests
+      run: make -C src/monkey repl_test
 
     - name: Run all tests
-      run: make all_tests
+      run: make -C src/monkey tests

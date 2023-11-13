@@ -28,6 +28,8 @@ std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_
         env->Set(n->Name->Value(), val);
     } else if (auto n = std::dynamic_pointer_cast<IntegerLiteral>(node)){
         return std::make_shared<Integer>(n->Value);
+    } else if (auto n = std::dynamic_pointer_cast<StringLiteral>(node)){
+        return std::make_shared<String>(n->Value);
     } else if (auto n = std::dynamic_pointer_cast<Boolean>(node)){
         return nativeBoolToBooleanObject(n->Value);
     } else if (auto n = std::dynamic_pointer_cast<PrefixExpression>(node)){
@@ -67,7 +69,15 @@ std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_
             return args[0];
         }
         return applyFunction(function, args);
+    } else if (auto n = std::dynamic_pointer_cast<ArrayLiteral>(node)){
+        auto elements = evalExpressions(n->Elements, env);
+        if(elements.size() == 1 && isError(elements[0])) return elements[0];
+        return std::make_shared<ArrayObject>(elements);
+    } else if (auto n = std::dynamic_pointer_cast<IndexExpression>(node)) {
+        
     }
+
+
     
     return nullptr;
 }

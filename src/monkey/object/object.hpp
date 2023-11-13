@@ -148,7 +148,7 @@ public:
 class ArrayObject : public Object {
 public: 
     std::vector<std::shared_ptr<Object>> Elements;
-
+    ArrayObject(std::vector<std::shared_ptr<Object>>& elms) : Elements(elms) {}
     ObjectType Type() const override { return ARRAY_OBJ; }
     std::string Inspect() const override {
         std::ostringstream out;
