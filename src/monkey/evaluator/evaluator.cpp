@@ -6,6 +6,86 @@ std::shared_ptr<NullObject> ObjectConstants::NULL_OBJ = std::make_shared<NullObj
 std::shared_ptr<BooleanObject> ObjectConstants::TRUE = std::make_shared<BooleanObject>(true);
 std::shared_ptr<BooleanObject> ObjectConstants::FALSE = std::make_shared<BooleanObject>(false);
 
+std::map<std::string, std::shared_ptr<Builtin>> builtins = {
+    {"len", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        if (args.size() != 1) {
+            return Evaluator::newError("wrong number of arguments. got=%zu, want=1", args.size());
+        }
+
+        auto argType = args[0]->Type();
+        if (argType == ARRAY_OBJ) {
+            auto arrayObj = std::dynamic_pointer_cast<ArrayObject>(args[0]);
+            return std::make_shared<Integer>(arrayObj->Elements.size());
+        } else if (argType == STRING_OBJ) {
+            auto stringObj = std::dynamic_pointer_cast<String>(args[0]);
+            return std::make_shared<Integer>(stringObj->Value.size());
+        } else {
+            return Evaluator::newError("argument to `len` not supported, got %s", ObjectTypeToString(argType).c_str());
+        }
+    })},
+    {"puts", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        for (auto& arg : args) {
+            std::cout << arg->Inspect() << std::endl;
+        }
+        return ObjectConstants::NULL_OBJ;
+    })},
+
+    {"first", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        if (args.size() != 1) {
+            return Evaluator::newError("wrong number of arguments. got=" + std::to_string(args.size()) + ", want=1");
+        }
+        if (args[0]->Type() != ARRAY_OBJ) {
+            return Evaluator::newError("argument to `first` must be ARRAY, got " + ObjectTypeToString(args[0]->Type()));
+        }
+        auto arr = std::dynamic_pointer_cast<ArrayObject>(args[0]);
+        if (!arr->Elements.empty()) {
+            return arr->Elements.front();
+        }
+        return ObjectConstants::NULL_OBJ;
+    })},
+
+    {"last", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        if (args.size() != 1) {
+            return Evaluator::newError("wrong number of arguments. got=" + std::to_string(args.size()) + ", want=1");
+        }
+        if (args[0]->Type() != ARRAY_OBJ) {
+            return Evaluator::newError("argument to `last` must be ARRAY, got " + ObjectTypeToString(args[0]->Type()));
+        }
+        auto arr = std::dynamic_pointer_cast<ArrayObject>(args[0]);
+        if (!arr->Elements.empty()) {
+            return arr->Elements.back();
+        }
+        return ObjectConstants::NULL_OBJ;
+    })},
+
+    {"rest", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        if (args.size() != 1) {
+            return Evaluator::newError("wrong number of arguments. got=" + std::to_string(args.size()) + ", want=1");
+        }
+        if (args[0]->Type() != ARRAY_OBJ) {
+            return Evaluator::newError("argument to `rest` must be ARRAY, got " + ObjectTypeToString(args[0]->Type()));
+        }
+        auto arr = std::dynamic_pointer_cast<ArrayObject>(args[0]);
+        if (arr->Elements.size() > 1) {
+            std::vector<std::shared_ptr<Object>> newElements(arr->Elements.begin() + 1, arr->Elements.end());
+            return std::make_shared<ArrayObject>(newElements);
+        }
+        return ObjectConstants::NULL_OBJ;
+    })},
+
+    {"push", std::make_shared<Builtin>([](const std::vector<std::shared_ptr<Object>>& args) -> std::shared_ptr<Object> {
+        if (args.size() != 2) {
+            return Evaluator::newError("wrong number of arguments. got=" + std::to_string(args.size()) + ", want=2");
+        }
+        if (args[0]->Type() != ARRAY_OBJ) {
+            return Evaluator::newError("argument to `push` must be ARRAY, got " + ObjectTypeToString(args[0]->Type()));
+        }
+        auto arr = std::dynamic_pointer_cast<ArrayObject>(args[0]);
+        auto newElements = arr->Elements;
+        newElements.push_back(args[1]);
+        return std::make_shared<ArrayObject>(newElements);
+    })}
+};
 
 std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_ptr<Environment> env) {
     // The dynamic_cast will check the actual type of Node and return nullptr if the cast is not valid.
