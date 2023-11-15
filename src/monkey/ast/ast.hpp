@@ -115,7 +115,8 @@ class IntegerLiteral : public Expression {
 public: 
     Token token;
     int64_t Value;
-
+    IntegerLiteral(const Token& t) : token(t) {}
+    IntegerLiteral(const Token& t, int64_t value) : token(t), Value(value) {}
     std::string TokenLiteral() const override;
     std::string String() const override;
     void expressionNode() override {}
@@ -188,6 +189,7 @@ public:
 class StringLiteral : public Expression {
 public: 
     StringLiteral(const Token& t);
+    StringLiteral(const Token& t, const std::string& s) : token(t), Value(s) {}
     Token token;
     std::string Value;
     void expressionNode() override {}

@@ -49,6 +49,21 @@ public:
     bool operator !=(const HashKey& rhs) const {
         return !(*this == rhs);
     }
+
+    bool operator < (const HashKey& rhs) const {
+        if (Type != rhs.Type) {
+            return Type < rhs.Type;
+        }
+        return Value < rhs.Value;
+    }
+
+    bool operator > (const HashKey& rhs) const {
+        if (Type != rhs.Type) {
+            return Type > rhs.Type;
+        }
+        return Value > rhs.Value;
+    }
+
 };
 
 class Hashable {
@@ -148,7 +163,7 @@ public:
 class ArrayObject : public Object {
 public: 
     std::vector<std::shared_ptr<Object>> Elements;
-    ArrayObject(std::vector<std::shared_ptr<Object>>& elms) : Elements(elms) {}
+    ArrayObject(const std::vector<std::shared_ptr<Object>>& elms) : Elements(elms) {}
     ObjectType Type() const override { return ARRAY_OBJ; }
     std::string Inspect() const override {
         std::ostringstream out;
@@ -170,7 +185,8 @@ public:
 };
 
 class Hash : public Object {
-public: 
+public:
+    Hash(const std::map<HashKey, HashPair>& p) : Pairs(p) {}
     std::map<HashKey, HashPair> Pairs;
     ObjectType Type() const override { return HASH_OBJ; }
     std::string Inspect() const override {
