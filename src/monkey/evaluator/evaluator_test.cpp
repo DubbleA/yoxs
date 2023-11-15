@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cassert>
+#include <variant>
+#include <string>
 #include "evaluator.hpp"
 #include "../lexer/lexer.hpp"
 #include "../object/object.hpp"
@@ -15,6 +17,8 @@ void TestLetStatements();
 void TestFunctionObject();
 void TestFunctionApplication();
 void TestEnclosingEnvironments();
+void TestClosures();
+void TestStringLiteral();
 std::shared_ptr<Object> testEval(const std::string& input);
 bool testIntegerObject(const std::shared_ptr<Object>& obj, int64_t expected);
 bool testBooleanObject(const std::shared_ptr<Object>& obj, bool expected);
@@ -121,11 +125,11 @@ void TestIfElseExpressions(){
     };
 
     for(const auto& tt : tests){
-        auto evaluted = testEval(tt.input);
+        auto evaluated = testEval(tt.input);
         if(tt.expected){
-            testIntegerObject(evaluted, std::static_pointer_cast<Integer>(tt.expected)->Value);
+            testIntegerObject(evaluated, std::static_pointer_cast<Integer>(tt.expected)->Value);
         } else {
-            testNullObject(evaluted);
+            testNullObject(evaluated);
         }
     }
 
@@ -226,6 +230,14 @@ void TestErrorHandling(){
             "foobar",
             "identifier not found: foobar"
         },
+        {
+			R"({"name": "Monkey"}[fn(x) { x }];)",
+			"unusable as hash key: FUNCTION",
+		},
+		{
+			"999[1]",
+			"index operator not supported: INTEGER",
+		}
     };
 
     for (const auto& tt : tests) {
@@ -320,6 +332,254 @@ void TestEnclosingEnvironments() {
     testIntegerObject(testEval(input), 70);
 }
 
+void TestClosures() {
+    std::string input = R"(
+    let newAdder = fn(x) {
+      fn(y) { x + y };
+    };
+
+    let addTwo = newAdder(2);
+    addTwo(2);)";
+    testIntegerObject(testEval(input), 4);
+}
+
+void TestStringLiteral(){
+    std::string input = R"("Hello World!")";
+    auto evaluated = testEval(input);
+    auto str = std::dynamic_pointer_cast<String>(evaluated);
+    if(!str) std::cerr << "object is not String. got=" << typeid(evaluated.get()).name() << std::endl;
+
+    if(str->Value != "Hello World!") throw std::runtime_error("String has wrong value. got=" + str->Value);
+}
+
+void TestStringConcatenation() {
+    std::string input = R"("Hello" + " " + "World!")";
+    auto evaluated = testEval(input);
+    auto str = std::dynamic_pointer_cast<String>(evaluated);
+    if(!str) std::cerr << "object is not String. got=" << typeid(evaluated.get()).name() << std::endl;
+    if(str->Value != "Hello World!") throw std::runtime_error("String has wrong value. got=" + str->Value);
+}
+
+void TestBuiltinFunctions() {
+    struct TestCase {
+        std::string input;
+        std::variant<int, std::string, std::nullptr_t, std::vector<int>> expected;
+    };
+
+    std::vector<TestCase> tests = {
+        {"len(\"\")", 0},
+        {"len(\"four\")", 4},
+        {"len(\"hello world\")", 11},
+        {"len(1)", std::string("argument to `len` not supported, got INTEGER")},
+        {"len(\"one\", \"two\")", std::string("wrong number of arguments. got=2, want=1")},
+        {"len([1, 2, 3])", 3},
+        {"len([])", 0},
+        {"puts(\"hello\", \"world!\")", nullptr},
+        {"first([1, 2, 3])", 1},
+        {"first([])", nullptr},
+        {"first(1)", std::string("argument to `first` must be ARRAY, got INTEGER")},
+        {"last([1, 2, 3])", 3},
+        {"last([])", nullptr},
+        {"last(1)", std::string("argument to `last` must be ARRAY, got INTEGER")},
+        {"rest([1, 2, 3])", std::vector<int>{2, 3}},
+        {"rest([])", nullptr},
+        {"push([], 1)", std::vector<int>{1}},
+        {"push(1, 1)", std::string("argument to `push` must be ARRAY, got INTEGER")}
+    };
+
+    for (const auto& tt : tests) {
+        auto evaluated = testEval(tt.input);
+        //This approach uses C++17 features like if constexpr and std::visit to handle the different types in the variant. 
+        std::visit([&](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, int>) {
+                testIntegerObject(evaluated, arg);
+            } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
+                testNullObject(evaluated);
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                auto errObj = std::dynamic_pointer_cast<Error>(evaluated);
+                if(!errObj) std::cerr << "object is not Error. got=" << typeid(evaluated).name() << std::endl;
+                const std::string& expectedError = std::get<std::string>(tt.expected);
+                if (errObj->Message != expectedError) {
+                    std::cerr << "wrong error message. expected=" << expectedError << ", got=" << errObj->Message << std::endl;
+                }
+            } else if constexpr (std::is_same_v<T, std::vector<int>>) {
+                auto array = std::dynamic_pointer_cast<ArrayObject>(evaluated);
+                if (!array) {
+                    std::cerr << "obj not Array. got=" << typeid(evaluated).name() << std::endl;
+                    return;
+                }
+                // Extract the vector from the variant for comparison
+                const std::vector<int>& expectedVector = std::get<std::vector<int>>(tt.expected);
+                if (array->Elements.size() != expectedVector.size()) {
+                    std::cerr << "wrong num of elements. want=" << expectedVector.size() << " got=" << array->Elements.size() << "\n";
+                }
+                for (size_t i = 0; i < expectedVector.size(); ++i) {
+                    testIntegerObject(array->Elements[i], expectedVector[i]);
+                }
+            }
+        }, tt.expected);
+    }
+}
+
+void TestArrayLiteral() {
+    std::string input = "[1, 2 * 2, 3 + 3]";
+    auto evaluated = testEval(input);
+    auto result = std::dynamic_pointer_cast<ArrayObject>(evaluated);
+    if(!result) std::cerr << "object is not Array. got=" << evaluated << std::endl;
+    if(result->Elements.size() != 3) std::cerr << "array has wrong num of elements. got=" << result->Elements.size() << "\n";
+    testIntegerObject(result->Elements[0], 1);
+	testIntegerObject(result->Elements[1], 4);
+	testIntegerObject(result->Elements[2], 6);
+}
+
+void TestArrayIndexExpressions() {
+    struct TestCase {
+        std::string input;
+        std::shared_ptr<Object> expected;
+    };
+
+    std::vector<TestCase> tests = {
+        {
+			"[1, 2, 3][0]",
+			std::make_shared<Integer>(1),
+		},
+		{
+			"[1, 2, 3][1]",
+			std::make_shared<Integer>(2),
+		},
+		{
+			"[1, 2, 3][2]",
+			std::make_shared<Integer>(3),
+		},
+		{
+			"let i = 0; [1][i];",
+			std::make_shared<Integer>(1),
+		},
+		{
+			"[1, 2, 3][1 + 1];",
+			std::make_shared<Integer>(3),
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[2];",
+			std::make_shared<Integer>(3),
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+			std::make_shared<Integer>(6),
+		},
+		{
+			"let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
+			std::make_shared<Integer>(2),
+		},
+		{
+			"[1, 2, 3][3]",
+			nullptr,
+		},
+		{
+			"[1, 2, 3][-1]",
+			nullptr,
+		},
+    };
+
+    for(const auto& tt: tests){
+        auto evaluated = testEval(tt.input);
+        if(tt.expected){
+            testIntegerObject(evaluated, std::static_pointer_cast<Integer>(tt.expected)->Value);
+        } else {
+            testNullObject(evaluated);
+        }
+    }
+}
+
+void TestHashLiterals() {
+    std::string input = R"(
+        let two = "two";
+	{
+		"one": 10 - 9,
+		two: 1 + 1,
+		"thr" + "ee": 6 / 2,
+		4: 4,
+		true: 5,
+		false: 6
+	}
+    )";
+
+    auto evaluated = testEval(input);
+    auto result = std::dynamic_pointer_cast<Hash>(evaluated);
+    if(!result) std::cerr << "Eval didn't return Hash. got=" << evaluated << std::endl;
+
+    auto expected = std::map<HashKey, int64_t>{
+        { std::make_shared<String>("one")->keyHash(), 1 },
+        { std::make_shared<String>("two")->keyHash(), 2 },
+        { std::make_shared<String>("three")->keyHash(), 3 },
+        { std::make_shared<Integer>(4)->keyHash(), 4 },
+        { ObjectConstants::TRUE->keyHash(), 5 },
+        { ObjectConstants::FALSE->keyHash(), 6 },
+    };
+
+    if (result->Pairs.size() != expected.size()) {
+        std::cerr << "Hash has wrong num of pairs. got=" << result->Pairs.size() << std::endl;
+    }
+
+    for (const auto& [expectedKey, expectedValue] : expected) {
+        auto iter = result->Pairs.find(expectedKey);
+        if (iter == result->Pairs.end()) {
+            std::cerr << "No pair for given key in Pairs" << std::endl;
+        } else {
+            testIntegerObject(iter->second.Value, expectedValue);
+        }
+    }
+}
+
+void TestHashIndexExpressions() {
+    struct TestCase {
+        std::string input;
+        std::shared_ptr<Object> expected;
+    };
+
+    std::vector<TestCase> tests = {
+        {
+			"{\"foo\": 5}[\"foo\"]",
+			std::make_shared<Integer>(5),
+		},
+		{
+			"{\"foo\": 5}[\"bar\"]",
+			nullptr,
+		},
+		{
+			"let key = \"foo\"; {\"foo\": 5}[key]",
+			std::make_shared<Integer>(5),
+		},
+		{
+			"{}[\"foo\"]",
+			nullptr,
+		},
+		{
+			"{5: 5}[5]",
+			std::make_shared<Integer>(5),
+		},
+		{
+			"{true: 5}[true]",
+			std::make_shared<Integer>(5),
+		},
+		{
+			"{false: 5}[false]",
+			std::make_shared<Integer>(5),
+		},
+    };
+
+    for(const auto& tt: tests){
+        auto evaluated = testEval(tt.input);
+        if(tt.expected){
+            testIntegerObject(evaluated, std::static_pointer_cast<Integer>(tt.expected)->Value);
+        } else {
+            testNullObject(evaluated);
+        }
+    }
+
+}
+
 std::shared_ptr<Object> testEval(const std::string& input) {
     Lexer l(input);
     Parser p(l);
@@ -375,6 +635,14 @@ int main() {
     TestFunctionObject();
     TestFunctionApplication();
     TestEnclosingEnvironments();
+    TestClosures();
+    TestStringLiteral();
+    TestStringConcatenation();
+    TestBuiltinFunctions();
+    TestArrayLiteral();
+    TestArrayIndexExpressions();
+    TestHashLiterals();
+    TestHashIndexExpressions();
     std::cout << "All evaluator_test.cpp tests passed!" << std::endl;
     return 0;
 }
