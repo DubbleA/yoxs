@@ -388,9 +388,9 @@ void TestOperatorPrecedenceParsing() {
         Lexer l(tt.input);
         Parser p(l);
         auto program = p.ParseProgram();
-        checkParserErrors(p);  // Make sure this function doesn't require the 't' parameter
+        checkParserErrors(p);
 
-        std::string actual = program->String();  // Assuming your AST nodes have a ToString method
+        std::string actual = program->String();
         if (actual != tt.expected) {
             std::cerr << "expected=" << tt.expected << ", got=" << actual << std::endl;
         }
@@ -752,6 +752,88 @@ void TestCallExpressionParameterParsing() {
     }
 }
 
+void TestStringLiteralExpression() {
+    std::string input = "\"Hello World\";";
+
+    Lexer l(input);
+    Parser p(l);
+    auto program = p.ParseProgram();
+    checkParserErrors(p);
+
+    assert(program->Statements.size() == 1);
+
+    const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    assert(exprStmt != nullptr);
+
+    const auto* literal = dynamic_cast<StringLiteral*>(exprStmt->expr.get());
+    assert(literal != nullptr);
+    std::cout << "got literal: " + literal->String() << std::endl;
+    assert(literal->String() == "Hello World");
+}
+
+void TestArrayLiteralExpression() {
+    std::string input = "[1, 2];";
+
+    Lexer l(input);
+    Parser p(l);
+    auto program = p.ParseProgram();
+    checkParserErrors(p);
+
+    assert(program->Statements.size() == 1);
+
+    const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    assert(exprStmt != nullptr);
+
+    const auto* array = dynamic_cast<ArrayLiteral*>(exprStmt->expr.get());
+    assert(array != nullptr);
+    assert(array->Elements.size() == 2);
+    testIntegerLiteral(*array->Elements[0], 1);
+    testIntegerLiteral(*array->Elements[1], 2);
+}
+
+void TestIndexExpressions() {
+    std::string input = "myArray[0];";
+
+    Lexer l(input);
+    Parser p(l);
+    auto program = p.ParseProgram();
+    checkParserErrors(p);
+
+    assert(program->Statements.size() == 1);
+
+    const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    assert(exprStmt != nullptr);
+
+    const auto* indexExp = dynamic_cast<IndexExpression*>(exprStmt->expr.get());
+    assert(indexExp != nullptr);
+
+    testIdentifier(*indexExp->Left, "myArray");
+    testIntegerLiteral(*indexExp->Index, 0);
+}
+
+void TestHashLiteralExpression() {
+    std::string input = "{\"key\": \"value\"};";
+
+    Lexer l(input);
+    Parser p(l);
+    auto program = p.ParseProgram();
+    checkParserErrors(p);
+
+    assert(program->Statements.size() == 1);
+
+    const auto* exprStmt = dynamic_cast<ExpressionStatement*>(program->Statements[0].get());
+    assert(exprStmt != nullptr);
+
+    const auto* hash = dynamic_cast<HashLiteral*>(exprStmt->expr.get());
+    assert(hash != nullptr);
+    assert(hash->Pairs.size() == 1);
+
+    const auto* key = dynamic_cast<StringLiteral*>(hash->Pairs.begin()->first.get());
+    const auto* value = dynamic_cast<StringLiteral*>(hash->Pairs.begin()->second.get());
+    assert(key != nullptr && key->String() == "key");
+    assert(value != nullptr && value->String() == "value");
+}
+
 bool testLetStatement(const std::shared_ptr<Statement>& s, const std::string& name) {
     if (s->TokenLiteral() != "let") {
         std::cerr << "s.TokenLiteral not 'let'. got=" << s->TokenLiteral() << std::endl;
@@ -901,7 +983,11 @@ int main() {
     TestCallExpressionParameterParsing();
     TestIntegerLiteralExpression();
     TestParsingInfixExpressions();
-
+    TestStringLiteralExpression();
+    TestArrayLiteralExpression();
+    TestIndexExpressions();
+    TestHashLiteralExpression();
+    
     std::cout << "All parser_test.cpp tests passed!" << std::endl;
     return 0;
 }
