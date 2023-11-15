@@ -68,4 +68,5 @@ int main() {
     TestStringHashKey();
     TestIntegerHashKey();
     TestIntegerHashKey();
+    std::cout << "object tests have finished!\n";
 }

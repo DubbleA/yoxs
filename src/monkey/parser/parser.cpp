@@ -26,6 +26,9 @@ Parser::Parser(Lexer& l) : lexer(&l) {
     registerPrefix(TokenType::INT, [this]() -> std::shared_ptr<Expression> {
         return this->parseIntegerLiteral();
     });
+    registerPrefix(TokenType::STRING, [this]() -> std::shared_ptr<Expression> {
+        return this->parseStringLiteral();
+    });
     registerPrefix(TokenType::BANG, [this]() -> std::shared_ptr<Expression> {
         return this->parsePrefixExpression();
     });
@@ -264,8 +267,7 @@ std::shared_ptr<Identifier>  Parser::parseIdentifier(){
 }
 
 std::shared_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
-    auto lit = std::make_shared<IntegerLiteral>();
-    lit->token = curToken;
+    auto lit = std::make_shared<IntegerLiteral>(curToken);
 
     try {
         //stoi can throw an exception if conversion fails
@@ -277,6 +279,10 @@ std::shared_ptr<IntegerLiteral>  Parser::parseIntegerLiteral(){
     }
 
     return lit;
+}
+
+std::shared_ptr<StringLiteral> Parser::parseStringLiteral() {
+    return std::make_shared<StringLiteral>(curToken, curToken.Literal);
 }
 
 std::shared_ptr<PrefixExpression>  Parser::parsePrefixExpression(){

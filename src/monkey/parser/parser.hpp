@@ -75,6 +75,7 @@ private:
 
     std::shared_ptr<Identifier> parseIdentifier();
     std::shared_ptr<IntegerLiteral> parseIntegerLiteral();
+    std::shared_ptr<StringLiteral> parseStringLiteral();
 
     std::shared_ptr<PrefixExpression> parsePrefixExpression();
     std::shared_ptr<InfixExpression> parseInfixExpression(std::shared_ptr<Expression> left);
