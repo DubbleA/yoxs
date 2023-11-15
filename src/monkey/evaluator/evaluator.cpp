@@ -6,6 +6,7 @@ std::shared_ptr<NullObject> ObjectConstants::NULL_OBJ = std::make_shared<NullObj
 std::shared_ptr<BooleanObject> ObjectConstants::TRUE = std::make_shared<BooleanObject>(true);
 std::shared_ptr<BooleanObject> ObjectConstants::FALSE = std::make_shared<BooleanObject>(false);
 
+
 std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_ptr<Environment> env) {
     // The dynamic_cast will check the actual type of Node and return nullptr if the cast is not valid.
     if (auto n = std::dynamic_pointer_cast<Program>(node)) {
@@ -74,11 +75,14 @@ std::shared_ptr<Object> Evaluator::Eval(std::shared_ptr<Node> node, std::shared_
         if(elements.size() == 1 && isError(elements[0])) return elements[0];
         return std::make_shared<ArrayObject>(elements);
     } else if (auto n = std::dynamic_pointer_cast<IndexExpression>(node)) {
-        
+        auto left = Eval(n->Left, env);
+        if(isError(left)) return left;
+        auto index = Eval(n->Index, env);
+        return evalIndexExpression(left, index);
+    } else if (auto n = std::dynamic_pointer_cast<HashLiteral>(node)){
+        return evalHashLiteral(n, env);
     }
 
-
-    
     return nullptr;
 }
 
@@ -131,10 +135,12 @@ std::shared_ptr<Object> Evaluator::evalPrefixExpression(const std::string& op, s
 }
 
 std::shared_ptr<Object> Evaluator::evalInfixExpression(const std::string& op, std::shared_ptr<Object> left, std::shared_ptr<Object> right){
-    if (left->Type() == INTEGER_OBJ && right->Type() == INTEGER_OBJ) {
-        return evalIntegerInfixExpression(op, left, right);
-    } else if (left->Type() != right->Type()) {
+    if (left->Type() != right->Type()) {
         return newError("type mismatch: %s %s %s", ObjectTypeToString(left->Type()).c_str(), op.c_str(), ObjectTypeToString(right->Type()).c_str());
+    } else if (left->Type() == INTEGER_OBJ && right->Type() == INTEGER_OBJ) {
+        return evalIntegerInfixExpression(op, left, right);
+    } else if(left->Type() == STRING_OBJ && right->Type() == STRING_OBJ) {
+        return evalStringInfixExpression(op, left, right);
     } else if (op == "==") {
         return nativeBoolToBooleanObject(left == right);
     } else if (op == "!=") {
@@ -184,6 +190,16 @@ std::shared_ptr<Object> Evaluator::evalIntegerInfixExpression(const std::string&
     //else {return newError("unknown operator: %s %s %s", left->Inspect().c_str(), op.c_str(), right->Inspect().c_str()); }
 }
 
+std::shared_ptr<Object> Evaluator::evalStringInfixExpression(const std::string& op, std::shared_ptr<Object> left, std::shared_ptr<Object> right){
+    if(op != "+"){
+       return newError("unknown operator: %s %s %s", ObjectTypeToString(left->Type()).c_str(), op.c_str(), ObjectTypeToString(right->Type()).c_str());
+    }
+    std::string leftVal = std::static_pointer_cast<String>(left)->Value;
+    std::string rightVal = std::static_pointer_cast<String>(right)->Value;
+
+    return std::make_shared<String>(leftVal + rightVal);
+}
+
 std::shared_ptr<Object> Evaluator::evalIfExpression(std::shared_ptr<IfExpression> ie, std::shared_ptr<Environment> env){
     auto condition = Eval(ie->Condition, env);
     if(isError(condition)) return condition;
@@ -200,8 +216,18 @@ std::shared_ptr<Object> Evaluator::evalIfExpression(std::shared_ptr<IfExpression
 
 std::shared_ptr<Object> Evaluator::evalIdentifier(std::shared_ptr<Identifier> node, std::shared_ptr<Environment> env){
     auto val = env->Get(node->Value());
-    if(!val) return newError("identifier not found: " + node->Value());
-    return val;
+    if (val) {
+        return val;
+    }
+
+    // If not found in the environment, check if it's a built-in function
+    auto it = builtins.find(node->Value());
+    if (it != builtins.end()) {
+        return it->second;  // Return the built-in function
+    }
+
+    // If neither in environment nor a built-in, return an error
+    return newError("identifier not found: " + node->Value());
 }
 
 bool Evaluator::isTruthy(std::shared_ptr<Object> obj){
@@ -244,15 +270,15 @@ std::vector<std::shared_ptr<Object>> Evaluator::evalExpressions(std::vector<std:
 }
 
 std::shared_ptr<Object> Evaluator::applyFunction(std::shared_ptr<Object> fn, std::vector<std::shared_ptr<Object>> args){
-    auto function = std::dynamic_pointer_cast<Function>(fn);
-    if (!function) {
-        // Not a function object, return an error.
-        return newError("not a function: %s", fn->Inspect().c_str());
+    if(auto fnCast = std::dynamic_pointer_cast<Function>(fn)){
+        auto extendedEnv = extendFunctionEnv(fnCast, args);
+        auto evaluated = Eval(fnCast->Body, extendedEnv);
+        return unwrapReturnValue(evaluated);
+    } else if (auto fnCast = std::dynamic_pointer_cast<Builtin>(fn)){
+        return fnCast->function(args);
     }
-
-    auto extendedEnv = extendFunctionEnv(function, args);
-    auto evaluated = Eval(function->Body, extendedEnv);
-    return unwrapReturnValue(evaluated);
+    //else
+    return newError("not a function: %s", fn->Inspect().c_str());
 }
 
 std::shared_ptr<Environment> Evaluator::extendFunctionEnv(std::shared_ptr<Function> fn, std::vector<std::shared_ptr<Object>> args){
@@ -269,6 +295,52 @@ std::shared_ptr<Object> Evaluator::unwrapReturnValue(std::shared_ptr<Object> obj
         return returnValue->Value;
     }
     return obj;
+}
+
+std::shared_ptr<Object> Evaluator::evalIndexExpression(std::shared_ptr<Object> left, std::shared_ptr<Object> index){
+    if(left->Type() == ARRAY_OBJ && index->Type() == INTEGER_OBJ) return evalArrayIndexExpression(left, index);
+    else if(left->Type() == HASH_OBJ) return evalHashIndexExpression(left, index);
+    else {return newError("index operator not supported: %s", ObjectTypeToString(left->Type()).c_str()); }
+}
+
+std::shared_ptr<Object> Evaluator::evalArrayIndexExpression(std::shared_ptr<Object> array, std::shared_ptr<Object> index){
+    auto arrayObject = std::dynamic_pointer_cast<ArrayObject>(array);
+    int idx = std::dynamic_pointer_cast<Integer>(index)->Value;
+    int max = arrayObject->Elements.size() - 1;
+
+    if(idx < 0 or idx > max) return ObjectConstants::NULL_OBJ;
+
+    return arrayObject->Elements[idx];
+}
+
+std::shared_ptr<Object> Evaluator::evalHashLiteral(std::shared_ptr<HashLiteral> node, std::shared_ptr<Environment> env){
+    std::map<HashKey, HashPair> pairs;
+    for(const auto& nodePair : node->Pairs) {
+        auto key = Eval(nodePair.first, env);
+        if(isError(key)) return key;
+
+        auto hashKey = std::dynamic_pointer_cast<Hashable>(key);
+        if(!hashKey) return newError("unusable as hash key: %s", ObjectTypeToString(key->Type()).c_str());
+
+        auto value = Eval(nodePair.second, env);
+        if(isError(key)) return value;
+
+        auto hashed = hashKey->keyHash();
+        pairs[hashed] = HashPair{key, value};
+    }
+
+    return std::make_shared<Hash>(pairs);
+}
+
+std::shared_ptr<Object> Evaluator::evalHashIndexExpression(std::shared_ptr<Object> hash, std::shared_ptr<Object> index){
+    auto hashObject = std::dynamic_pointer_cast<Hash>(hash);
+
+    auto key = std::dynamic_pointer_cast<Hashable>(index);
+    if(!key) return newError("unusable as hash key: %s", ObjectTypeToString(index->Type()).c_str());
+    auto pair = hashObject->Pairs.find(key->keyHash());
+    if(pair == hashObject->Pairs.end()) return ObjectConstants::NULL_OBJ;
+
+    return pair->second.Value;
 }
 
 //g++ -std=c++17 -Isrc -c src/monkey/evaluator/evaluator.cpp -o evaluator.o
