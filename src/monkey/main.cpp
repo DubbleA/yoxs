@@ -6,7 +6,8 @@ int main() {
     std::cout << "Feel free to type in commands" << std::endl;
 
     // Start the REPL using the standard input and output.
-    REPL::Start(std::cin, std::cout);
+    //REPL::Start(std::cin, std::cout);
+    REPL::StartSingle(std::cin, std::cout);
 
     return 0;
 }

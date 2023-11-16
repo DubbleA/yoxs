@@ -8,17 +8,26 @@ app = Flask(__name__)
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
+import subprocess
+
 def run_custom_compiler(code):
-    # For the purpose of this demonstration, we will simulate code execution
-    # In a real-world scenario, consider using a safe execution environment
     logging.info("Executing code")
     start_time = time.time()
-    
-    # Simulated code execution (replace with actual execution logic)
-    time.sleep(1)  # Simulating delay
-    output = "Simulated Output: " + code
-    
+
+    # Prepare the command to run your C++ program
+    command = ['./monkey_repl']
+
+    # Running the monkey_repl executable and passing the input
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    output, error = process.communicate(input=code)
+    process.wait()
+
     execution_time = time.time() - start_time
+
+    # Check for errors
+    if process.returncode != 0:
+        output = f"Error: {error}"
+
     return output, execution_time
 
 @app.route('/', methods=['GET', 'POST'])

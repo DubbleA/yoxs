@@ -14,7 +14,7 @@ public:
     static void tokenStart(std::istream& in, std::ostream& out);
     static void parserStart(std::istream& in, std::ostream& out);
     static void Start(std::istream& in, std::ostream& out);
-private:
+    static void StartSingle(std::istream& in, std::ostream& out);
     static void printParserErrors(std::ostream& out, const std::vector<std::string>& errors);
 };
 
