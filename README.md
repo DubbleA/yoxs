@@ -4,6 +4,17 @@ YOXS is a fully functional interpreter of the Monkey language created by Thorste
 
 YOXS utilizes a 3 stage (Lexical Analysis, Abstract-Syntax-Tree Construction & Parsing, and Evaluation) process to translate plaintext into evaluated code.
 
+## File Structure
+
+The project separates individual components with the structure of
+.hpp file: Header file defining necessary classes, and forward declarations of methods and attributes
+.cpp file: Contains the primary implementation of the package's functionality
+_test.cpp file: structured tests for the package
+
+## Testing
+
+run `make tests` to build and run tests and `make clean` to clean the compiled files
+
 # Stage One: Lexing | Lexical Analysis
 
 ## Tokens
@@ -31,7 +42,30 @@ This function collaborates with the enumerated class to locate the appropriate t
 
 ## Lexer
 
-The lexer reads in code and transforms it into tokens, represented by the TokenType object. These tokens are data structures that simply store the information regarding the code. They are then in turn parsed and transformed into a syntax tree to be parsed.
+The lexer's main objective is to transform our source code into a structured format that facilitates subsequent processing. This process, termed "lexical analysis," involves converting plaintext source code into a series of "tokens" represented by the TokenType object. 
+
+In simple terms, the lexer reads in code and transforms it into tokens which are simply data structures that store the information regarding the code. Eventaully they will be parsed and transformed into a syntax tree in Stage Two.
+
+### Example Transformation
+Given the input:
+
+```js
+let x = 5 + 5;
+```
+
+The lexer produces the following sequence of tokens:
+
+```js
+[
+  LET,
+  IDENTIFIER("x"),
+  EQUAL_SIGN,
+  INTEGER(5),
+  PLUS_SIGN,
+  INTEGER(5),
+  SEMICOLON
+]
+```
 
 ## Start of a REPL
 
