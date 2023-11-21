@@ -6,9 +6,9 @@ YOXS utilizes a 3 stage (Lexical Analysis, Abstract-Syntax-Tree Construction & P
 
 ## File Structure
 
-The project separates individual components with the structure of
-.hpp file: Header file defining necessary classes, and forward declarations of methods and attributes
-.cpp file: Contains the primary implementation of the package's functionality
+The project separates individual components with the structure of: \\
+.hpp file: Header file defining necessary classes, and forward declarations of methods and attributes \\
+.cpp file: Contains the primary implementation of the package's functionality \\
 _test.cpp file: structured tests for the package
 
 ## Testing
