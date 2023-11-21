@@ -126,3 +126,38 @@ INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:30:24] "GET / HTTP/1.1" 200 -
 INFO:root:Executing code
 INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:30:27] "POST / HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:30:33] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:03] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:05] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:05] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:06] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:08] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:31] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:35] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:41] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:46] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:36:59] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:40:26] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:40:27] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:40:30] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:40:38] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [17/Nov/2023 15:40:46] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [19/Nov/2023 18:42:41] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [19/Nov/2023 18:42:42] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [19/Nov/2023 18:43:10] "POST / HTTP/1.1" 200 -
