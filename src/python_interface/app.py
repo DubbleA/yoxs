@@ -6,6 +6,7 @@ import subprocess
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb+srv://yoxs_admin:9K668SonHpk9Oc2H@cluster0.jowbltk.mongodb.net/monkeyIDE"
+#app.config["MONGO_URI"] = "mongodb://localhost:27017/local"
 mongo = PyMongo(app)
 
 # use myDatabase
@@ -40,13 +41,12 @@ def run_custom_compiler(code):
 def index():
     if request.method == 'POST':
         code = request.form['code']
-        # mongo.db.samples.insert_one({'code': code})
 
         output, execution_time = run_custom_compiler(code)
         return render_template('index.html', code=code, output=output, execution_time=execution_time)
+    #code_samples = mongo.db.idesample.find()
     code_samples = mongo.db.samples.find()
     return render_template('index.html', code_samples=code_samples)
-    # return render_template('index.html', code='', output='', execution_time=0)
 
 if __name__ == '__main__':
     app.run(debug=True)
