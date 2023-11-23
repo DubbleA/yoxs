@@ -21,9 +21,10 @@ def user_inputs():
     """
     if request.method == "POST":
         try:
+            code = request.json['user_input']
             new_id = add_user_input(code)
             if new_id is None:
-                raise wz.ServiceUnavailable('Technical Issue Encountered')
+                raise wz.ServiceUnavailable('No Valid ID Given')
             return {USER_INPUT_ID: new_id}
         except ValueError as e:
             raise wz.NotAcceptable(f'{str(e)}')
