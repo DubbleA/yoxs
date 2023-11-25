@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <title>API Endpoints Documentation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .endpoint { background-color: #f0f0f8; padding: 10px; margin-bottom: 10px; }
+        .method { padding-left: 20px; }
+        .description { color: #555; }
+    </style>
+</head>
+<body>
+
+<h1>API Endpoints Documentation</h1>
+
+<div class="endpoint">
+    <h2>Tokenize</h2>
+    <div class="method">
+        <h3>POST /tokenize</h3>
+        <p class="description">Accepts code in Monkey language and returns its tokenized form.</p>
+    </div>
+</div>
+
+<div class="endpoint">
+    <h2>Parse</h2>
+    <div class="method">
+        <h3>POST /parse</h3>
+        <p class="description">Accepts tokenized code and returns its parsed structure.</p>
+    </div>
+</div>
+
+<div class="endpoint">
+    <h2>Evaluate</h2>
+    <div class="method">
+        <h3>POST /evaluate</h3>
+        <p class="description">Accepts parsed code and evaluates it, returning the result.</p>
+    </div>
+</div>
+
+<div class="endpoint">
+    <h2>Sample Programs</h2>
+    <div class="method">
+        <h3>GET /sample_programs</h3>
+        <p class="description">Returns a list of sample Monkey programs from the database.</p>
+    </div>
+</div>
+
+</body>
+</html>
