@@ -1,0 +1,2 @@
+export DB_ENV=1
+export MONGO_URI_CLOUD=mongodb+srv://yoxs_admin:9K668SonHpk9Oc2H@cluster0.jowbltk.mongodb.net/monkeyIDE

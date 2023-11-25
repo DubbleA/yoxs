@@ -1,37 +1,55 @@
-from flask import Flask, render_template, request, Blueprint
+from flask import Flask, request, jsonify
+from flask_restx import Resource, Api
 from flask_pymongo import PyMongo
-import werkzeug.exceptions as wz
+from data.db_connect import get_mongo_uri
+import subprocess
+import logging
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://yoxs_admin:9K668SonHpk9Oc2H@cluster0.jowbltk.mongodb.net/monkeyIDE"
+api = Api(app)
+
+# Initialize MongoDB connection
+app.config["MONGO_URI"] = get_mongo_uri()
 mongo = PyMongo(app)
 
-USER_INPUT_ID = 'User_Input_ID'
+@api.route('/tokenize')
+class Tokenize(Resource):
+    def post(self):
+        code = request.json.get('code')
+        output = run_compiler_stage(code, 'tokenize')
+        return jsonify(output=output)
 
-def add_user_input(code: str) -> bool:
-    _id = mongo.db.collection.insertOne(code)
-    return _id is not None
+@api.route('/parse')
+class Parse(Resource):
+    def post(self):
+        code = request.json.get('code')
+        output = run_compiler_stage(code, 'parse')
+        return jsonify(output=output)
 
-#Implementing REST API
-@app.route("/api/user_inputs", methods=['POST', 'GET'])
-def user_inputs():
-    """
-    This class supports various operations,
-    such as getting all user inputs and adding user inputs
-    """
-    if request.method == "POST":
-        try:
-            code = request.json['user_input']
-            new_id = add_user_input(code)
-            if new_id is None:
-                raise wz.ServiceUnavailable('No Valid ID Given')
-            return {USER_INPUT_ID: new_id}
-        except ValueError as e:
-            raise wz.NotAcceptable(f'{str(e)}')
-        
-    if request.method == "GET":
-        return {
-            'message': 'Return list of all user inputs'""", 
-            'method': request.method"""
-        }
+@api.route('/evaluate')
+class Evaluate(Resource):
+    def post(self):
+        code = request.json.get('code')
+        output = run_compiler_stage(code, 'evaluate')
+        return jsonify(output=output)
+
+@api.route('/sample_programs')
+class SamplePrograms(Resource):
+    def get(self):
+        programs = mongo.db.sample_programs.find()
+        return jsonify(programs=list(programs))
+
+def run_compiler_stage(code, stage):
+    logging.info(f"Running {stage} stage")
+    command = [f'./monkey_{stage}']  # Adjust the executable names as needed
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    output, error = process.communicate(input=code)
+
+    if process.returncode != 0:
+        output = f"Error: {error}"
+
+    return output
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
