@@ -298,3 +298,107 @@ INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 09:23:29] "GET / HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 09:23:30] "GET / HTTP/1.1" 200 -
 INFO:root:Executing code
 INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 09:23:32] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:14:30] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:15:02] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:15:24] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:22:32] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:22:47] "POST / HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/data/db_connect.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:50:30] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:50:30] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:50:32] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:51:11] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:51:26] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 11:55:41] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 12:57:53] "GET / HTTP/1.1" 200 -

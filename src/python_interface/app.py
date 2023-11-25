@@ -4,13 +4,14 @@ import logging
 import time
 import subprocess
 
-app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://yoxs_admin:9K668SonHpk9Oc2H@cluster0.jowbltk.mongodb.net/monkeyIDE"
-#app.config["MONGO_URI"] = "mongodb://localhost:27017/local"
-mongo = PyMongo(app)
+# Import connect_db from db_connect
+from data.db_connect import get_mongo_uri
 
-# use myDatabase
-# db.createCollection("samples")
+app = Flask(__name__)
+
+# Initialize MongoDB connection
+app.config["MONGO_URI"] = get_mongo_uri()
+mongo = PyMongo(app)
 
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO)
@@ -44,7 +45,7 @@ def index():
 
         output, execution_time = run_custom_compiler(code)
         return render_template('index.html', code=code, output=output, execution_time=execution_time)
-    #code_samples = mongo.db.idesample.find()
+
     code_samples = mongo.db.samples.find()
     return render_template('index.html', code_samples=code_samples)
 
