@@ -52,11 +52,11 @@ void TestIntegerHashKey() {
     YOXS_OBJECT::Integer two2(2);
 
     if (one1.keyHash() != one2.keyHash()) {
-		std::cerr << "integers with same content have twoerent hash keys\n";
+		std::cerr << "integers with same content have two different hash keys\n";
 	}
 
 	if (two1.keyHash() != two2.keyHash()) {
-		std::cerr << "integers with same content have twoerent hash keys\n";
+		std::cerr << "integers with same content have two different hash keys\n";
 	}
 
 	if (one1.keyHash() == two1.keyHash()) {
