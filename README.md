@@ -96,6 +96,10 @@ Our plans are to implement a an API server via FLASK, though we currently are co
 
 ## Abstract Syntax Tree (AST)
 
+In our AST we start with three interfaces: Node, Statement, Expression. Every Node in our AST has to implement the Node interface, meaning we have to provide a TokenLiteral() method that returns the literal token value associated with it. TokenLiteral() will be used for debugging and testing. The AST we are constructing will consist of connected nodes, where some will implement the expression or statement interface. They will each contain a statementNode and expressionNode dummy method respectively. They are not strictly necessary but help us in the compilation and possibly causing it to throw errors i.e. when we use a Statement when an Expression. 
+
+This Program node is going to be the root node of every AST our parser produces. Every valid Monkey program is a series of statements. These statements are contained in the Program.Statements, which is just a slice of AST nodes that implement the Statement interface.
+
 ## Parser (Recursive Descent Pratt Parsing)
 
 ### Introduction
