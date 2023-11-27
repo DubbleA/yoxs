@@ -67,10 +67,41 @@ The lexer produces the following sequence of tokens:
 ]
 ```
 
-## Start of a REPL
+## REPL | Stage 1
 
-The REPL, or the read-eval-print-loop, continuously reads in inputs from the user and calls the lexer to parse them.
+The REPL, or the read-eval-print-loop, continuously reads in inputs from the user and calls the lexer to parse them. Similar to what's found in languages like Python and Ruby, our REPL reads input, sends it to the interpreter for processing, and then loops back to await further input.
+
+### Reading & Tokenization
+At this stage, our REPL primarily focuses on reading input and processing it into its tokenized form. While the term "Evaluate" is part of the REPL acronym, we aren't evaluating our source code yet. The current emphasis lies on capturing the user's input and transforming it into a series of tokens that provide a structured representation of the code.
+
+### Continuation Until EOF
+Our REPL continues to read new input iteratively. This loop persists until the system encounters the designated "end of file" (EOF) token, signaling the REPL to terminate.
+
+### Note
+The tokens produced by the REPL are integral to the process, serving as the bridge between raw user input and the interpreter. For more details on the tokenization process and the structure of tokens, please refer to the **Token Documentation**.
+
+## Example Function
+let x = 10;
+let y = 15;
+
+let add = fn(a, b) {
+  return a + b;
+};
 
 ## Future Plans
 
 Our plans are to implement a an API server via FLASK, though we currently are considering other options as well. Regarding the front-end, we're planning on taking inspiration from this site: https://emu86.pythonanywhere.com. Our endpoints are most likely going to be a way to implement front-facing dashboard. We're planning on implementing the database using MongoDB and are considering either AWS or GCP as a cloud provider.
+
+# Stage Two: Parsing 
+
+## Abstract Syntax Tree (AST)
+
+## Parser (Recursive Descent Pratt Parsing)
+
+# Stage Three: Evaluation
+
+## Object
+
+## Environment
+
+## Evaluator
