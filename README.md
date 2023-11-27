@@ -230,3 +230,5 @@ Assertion functions like `curTokenIs`, `peekTokenIs`, and `expectPeek` are utili
 ## Environment
 
 ## Evaluator
+
+Making the Eval method static allows it to be called without needing to create an instance of the Evaluator class. This use of static provides a way to organize our code and encapsulate related functionality together
