@@ -4,6 +4,7 @@ from flask_pymongo import PyMongo
 from data.db_connect import get_mongo_uri
 import subprocess
 import logging
+import werkzeug.exceptions as wz
 
 app = Flask(__name__)
 api = Api(app)
@@ -18,24 +19,33 @@ def inDatabase(programID):
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
-        code = request.json.get('code')
-        output = run_compiler_stage(code, 'tokenize')
-        return jsonify(output=output)
+        try:
+            code = request.json.get('code')
+            output = run_compiler_stage(code, 'tokenize')
+            return jsonify(output=output)
+        except ValueError as e:
+                raise wz.NotFound(f'{str(e)}')
 
 @api.route('/parse')
 class Parse(Resource):
     def post(self):
-        code = request.json.get('code')
-        output = run_compiler_stage(code, 'parse')
-        return jsonify(output=output)
+        try:
+            code = request.json.get('code')
+            output = run_compiler_stage(code, 'parse')
+            return jsonify(output=output)
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
 @api.route('/evaluate')
 class Evaluate(Resource):
     def post(self):
-        code = request.json.get('code')
-        output = run_compiler_stage(code, 'evaluate')
-        return jsonify(output=output)
-
+        try:
+            code = request.json.get('code')
+            output = run_compiler_stage(code, 'evaluate')
+            return jsonify(output=output)
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+        
 @api.route('/sample_programs')
 class SamplePrograms(Resource):
     def get(self):
@@ -51,7 +61,10 @@ class FindSpecificProgram(Resource):
 @api.route('/delete_specific_sample_program')
 class DeleteSpecificSamplePrograms(Resource):
     def get(self, programID):
-        return mongo.db.sample_programs.deleteOne({id: programID})
+        try:
+            return mongo.db.sample_programs.deleteOne({id: programID})
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
 def run_compiler_stage(code, stage):
     logging.info(f"Running {stage} stage")
