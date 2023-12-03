@@ -12,6 +12,9 @@ api = Api(app)
 app.config["MONGO_URI"] = get_mongo_uri()
 mongo = PyMongo(app)
 
+def inDatabase(programID):
+    return mongo.db.sample_programs.fetch_one({id: programID})
+
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
@@ -38,6 +41,17 @@ class SamplePrograms(Resource):
     def get(self):
         programs = mongo.db.sample_programs.find()
         return jsonify(programs=list(programs))
+    
+@api.route('/find_specific_sample_program')
+class FindSpecificProgram(Resource):
+    def get(self, programID):
+        program = mongo.db.sample_programs.find({id: programID})
+        return jsonify(program)
+
+@api.route('/delete_specific_sample_program')
+class DeleteSpecificSamplePrograms(Resource):
+    def get(self, programID):
+        return mongo.db.sample_programs.deleteOne({id: programID})
 
 def run_compiler_stage(code, stage):
     logging.info(f"Running {stage} stage")
