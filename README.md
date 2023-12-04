@@ -363,7 +363,127 @@ Assertion functions like `curTokenIs`, `peekTokenIs`, and `expectPeek` are utili
 
 ## Object
 
+This package defines the objects used to represent different types of values and structures within the programming language, each encapsulating specific data and behaviors.
+
+### ObjectType Enumeration
+
+- **Purpose**: Defines the types of objects that can be represented in the language.
+- **Types**: NULL_OBJ, ERROR_OBJ, INTEGER_OBJ, BOOLEAN_OBJ, STRING_OBJ, RETURN_VALUE_OBJ, FUNCTION_OBJ, BUILTIN_OBJ, ARRAY_OBJ, HASH_OBJ.
+
+### Object Class
+
+- **Purpose**: Base class for all objects in the language.
+- **Methods**:
+  - `Type()`: Returns the object's type.
+  - `Inspect()`: Returns a string representation of the object.
+
+### Integer Class
+
+- **Purpose**: Represents an integer value.
+- **Fields**: `Value` - The integer value.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### BooleanObject Class
+
+- **Purpose**: Represents a boolean value.
+- **Fields**: `Value` - The boolean value.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### NullObject Class
+
+- **Purpose**: Represents a null value.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### ReturnValue Class
+
+- **Purpose**: Represents the return value from a function.
+- **Fields**: `Value` - The object returned.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### Error Class
+
+- **Purpose**: Represents an error.
+- **Fields**: `Message` - The error message.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### Function Class
+
+- **Purpose**: Represents a function.
+- **Fields**:
+  - `Parameters` - Function parameters.
+  - `Env` - The environment in which the function executes.
+  - `Body` - The function's body.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### String Class
+
+- **Purpose**: Represents a string value.
+- **Fields**: `Value` - The string value.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### Builtin Class
+
+- **Purpose**: Represents a built-in function.
+- **Fields**: `function` - The function implementation.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### ArrayObject Class
+
+- **Purpose**: Represents an array.
+- **Fields**: `Elements` - The elements in the array.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### HashPair Class
+
+- **Purpose**: Represents a key-value pair in a hash.
+- **Fields**: 
+  - `Key` - The key object.
+  - `Value` - The value object.
+
+### Hash Class
+
+- **Purpose**: Represents a hash (map/dictionary).
+- **Fields**: `Pairs` - A map of hash keys to HashPairs.
+- **Methods**: Inherits `Type()` and `Inspect()` from `Object`.
+
+### ObjectTypeToString
+
+- **Purpose**: Converts an `ObjectType` enum value to its string representation.
+- **Usage**: Used throughout the package to provide readable object type names.
+
 ## Environment
+
+### Purpose
+
+The `Environment` class is designed to store and manage the bindings between variable names and their respective values. It is an essential component for implementing lexical scoping within the programming language.
+
+### Structure
+
+- **Fields**:
+  - `outer`: A pointer to an outer environment. This allows the creation of a nested, hierarchical scope structure.
+  - `store`: An unordered map that holds the variable bindings, mapping variable names (strings) to their corresponding objects.
+
+### Constructors
+
+- **Environment(std::shared_ptr<Environment> outer = nullptr)**: Constructs an `Environment` instance, optionally linked to an outer environment.
+
+### Methods
+
+- **Get(const std::string& name)**:
+  - **Purpose**: Retrieves the object bound to the given variable name.
+  - **Parameters**: `name` - The name of the variable.
+  - **Returns**: A shared pointer to the `Object` associated with the variable name, or `nullptr` if the variable is not found.
+
+- **Set(const std::string& name, std::shared_ptr<Object> val)**:
+  - **Purpose**: Binds a value (object) to a variable name within the environment.
+  - **Parameters**: 
+    - `name` - The name of the variable.
+    - `val` - A shared pointer to the `Object` to bind to the variable name.
+  - **Returns**: A shared pointer to the `Object` that was set.
+
+### Usage
+
+The `Environment` class is utilized in the language's runtime to maintain the state of variables. When a variable is referenced, the environment is queried to retrieve its value. When a variable is assigned, the environment is updated with the new binding.
 
 ## Evaluator
 
