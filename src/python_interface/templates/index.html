@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Code Runner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,6 +21,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
+            width: 60%;
         }
         select, textarea {
             width: 100%;
@@ -33,6 +35,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #45a049;
@@ -47,65 +50,37 @@
     </style>
 </head>
 <body class="dashboard">
-
     <div class="module">
         <h1>Run Your Code</h1>
         
         <label for="exampleCode">Choose an example program:</label> 
-        <!-- <select id="exampleCode" name="exampleCode" onchange="selectExample(this.value)">
-            <option value="none" selected></option>
-            <option value="sample1">Sample 1</option>
-            <option value="sample2">Sample 2</option>
-            <option value="sample3">Sample 3</option>
-            <option value="sample4">Sample 4</option>
-        </select> -->
         <select id="exampleCode" name="exampleCode" onchange="selectExample(this.value)">
             <option value="none" selected></option>
             {% for sample in code_samples %}
                 <option value="{{ sample.code }}">{{ sample.name }}</option>
             {% endfor %}
         </select>
-        
 
         <form method="POST">
-            <textarea id="codeInput" name="code" rows="10" cols="50">{{ code }}</textarea><br>
+            <textarea id="codeInput" name="code" rows="10" cols="50" class="language-javascript">{{ code }}</textarea><br>
             <button type="submit">Run Code</button>
         </form>
 
         {% if output %}
             <div class="output">
                 <h2>Output</h2>
-                <pre>{{ output }}</pre>
+                <pre class="language-javascript">{{ output }}</pre>
             </div>
         {% endif %}
     </div>
-    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
     <script>
         function selectExample(code) {
             var codeInput = document.getElementById('codeInput');
             codeInput.value = code;
+            Prism.highlightAll();
         }
-
-        // function selectExample(value) {
-        //     var codeInput = document.getElementById('codeInput');
-        //     switch(value) {
-        //         case 'sample1':
-        //             codeInput.value = 'if (10 > 1) {\n if (10 > 1) {\n return 10;\n }\n \n return 1;\n}\n';
-        //             break;
-        //         case 'sample2':
-        //             codeInput.value = 'let f = fn(x) {\n return x;\n x + 10;\n };\n f(10);';
-        //             break;
-        //         case 'sample3':
-        //             codeInput.value = 'let f = fn(x) {\n let result = x + 10;\n return result;\n return 10;\n };\n f(10);';
-        //             break;
-        //         case 'sample4':
-        //             codeInput.value = '';
-        //             break;
-        //         default:
-        //             codeInput.value = '';
-        //     }
-        // }
     </script>
-
 </body>
 </html>
