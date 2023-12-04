@@ -487,4 +487,50 @@ The `Environment` class is utilized in the language's runtime to maintain the st
 
 ## Evaluator
 
-Making the Eval method static allows it to be called without needing to create an instance of the Evaluator class. This use of static provides a way to organize our code and encapsulate related functionality together
+The `Evaluator` is a crucial component of the programming language's runtime, responsible for processing and interpreting the abstract syntax tree (AST) nodes and executing the program.
+
+### Purpose
+
+The `Evaluator` class is designed to traverse and interpret the AST created by the parser. It evaluates nodes to produce corresponding runtime objects, handling various aspects of language execution like arithmetic operations, control structures, function application, and more.
+
+### Key Methods
+
+- **Eval**: The primary method to evaluate an AST node.
+- **evalProgram**: Evaluates a program (sequence of statements).
+- **evalBlockStatement**: Evaluates a block of statements.
+- **nativeBoolToBooleanObject**: Converts a native boolean to a BooleanObject.
+- **evalPrefixExpression**: Evaluates prefix expressions.
+- **evalInfixExpression**: Evaluates infix expressions.
+- **evalBangOperatorExpression**: Evaluates the '!' operator.
+- **evalMinusPrefixOperatorExpression**: Evaluates the '-' operator for prefix expressions.
+- **evalIntegerInfixExpression**: Evaluates infix expressions with integer operands.
+- **evalStringInfixExpression**: Evaluates infix expressions with string operands.
+- **evalIfExpression**: Evaluates 'if' expressions.
+- **evalIdentifier**: Evaluates identifiers, resolving their values.
+- **isTruthy**: Determines the truthiness of an object.
+- **newError**: Creates a new error object.
+- **isError**: Checks if an object is an error.
+- **evalExpressions**: Evaluates a list of expressions.
+- **applyFunction**: Applies a function to its arguments.
+- **extendFunctionEnv**: Extends the environment for function execution.
+- **unwrapReturnValue**: Extracts the value from a return object.
+- **evalIndexExpression**: Evaluates index expressions for arrays and hashes.
+- **evalArrayIndexExpression**: Specifically evaluates array index expressions.
+- **evalHashLiteral**: Evaluates hash literal expressions.
+- **evalHashIndexExpression**: Specifically evaluates hash index expressions.
+
+### Built-in Functions
+
+The `Evaluator` includes a set of built-in functions like `len`, `puts`, `first`, `last`, `rest`, and `push`, each designed to provide fundamental functionalities in the language.
+
+### ObjectConstants Class
+
+- **Purpose**: Provides constant object instances used throughout evaluation.
+- **Fields**:
+  - `NULL_OBJ`: Represents the null object.
+  - `TRUE`: Represents the true BooleanObject.
+  - `FALSE`: Represents the false BooleanObject.
+
+### Usage
+
+The `Evaluator` is invoked after parsing the source code into an AST. It recursively evaluates each node of the AST, effectively executing the program. It handles variable bindings, function calls, control structures, and more, translating the static AST into dynamic behaviors defined by the language.
