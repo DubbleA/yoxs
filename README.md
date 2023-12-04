@@ -2,7 +2,9 @@
 
 YOXS is a fully functional interpreter of the Monkey language created by Thorsten Ball written in C++. 
 
-YOXS utilizes a 3 stage (Lexical Analysis, Abstract-Syntax-Tree Construction & Parsing, and Evaluation) process to translate plaintext into evaluated code.
+The interpreter utilizes a 3 stage (Lexical Analysis, Abstract-Syntax-Tree Construction & Parsing, and Evaluation) process to translate plaintext into evaluated code.
+
+In addition to the interpreter, there is an API Server with 10+ REST Endpoints connected to a front-end visualizer where users can see the under the hood process of how an interpreter functions. Users can input their own code or pick one of the sampleprograms hosted in MongoDB.
 
 ## File Structure
 
@@ -17,14 +19,38 @@ run `make tests` to build and run tests and `make clean` to clean the compiled f
 
 # Stage One: Lexing | Lexical Analysis
 
+To convert plaintext into a more usable format we need to convert it from Source Code -> Tokens -> Abstract Syntax Tree. The first transformation, from source code to tokens is called "lexical analysis". 
+
 ## Tokens
 
 The primary objective of the tokens package is to define the set of tokens that our lexer will process and produce. These tokens serve as standardized representations of our source code elements.
 
 ### Special Tokens
+Token Types Analysis
+
+For example tokens contains several token types:
+- **Numbers**: Represent integers like 5 and 10.
+- **Identifiers**: Variable names like x, y, add, and result.
+- **Keywords**: Language-specific words like let and fn.
+- **Special Characters**: Symbols including (, ), {, }, =, ,, ;.
 We've designated two unique tokens, namely:
 - **EOF**: Indicates the end of the file.
 - **ILLEGAL**: Represents any unrecognized tokens or symbols.
+
+C++ Implementation:
+```cpp
+// Enum class for TokenType
+enum class TokenType {
+    // ... [token types definitions]
+};
+
+// Token class
+class Token {
+    // ... [class definition]
+};
+
+// ... [additional functions and operator overloads]
+```
 
 ### Special Functions
 
@@ -99,6 +125,116 @@ Our plans are to implement a an API server via FLASK, though we currently are co
 In our AST we start with three interfaces: Node, Statement, Expression. Every Node in our AST has to implement the Node interface, meaning we have to provide a TokenLiteral() method that returns the literal token value associated with it. TokenLiteral() will be used for debugging and testing. The AST we are constructing will consist of connected nodes, where some will implement the expression or statement interface. They will each contain a statementNode and expressionNode dummy method respectively. They are not strictly necessary but help us in the compilation and possibly causing it to throw errors i.e. when we use a Statement when an Expression. 
 
 This Program node is going to be the root node of every AST our parser produces. Every valid Monkey program is a series of statements. These statements are contained in the Program.Statements, which is just a slice of AST nodes that implement the Statement interface.
+
+## Key Interfaces and Classes
+
+### Node Interface
+
+- **Purpose**: Serves as the base interface for all nodes in the AST.
+- **Method**: `TokenLiteral()` - Returns the literal token value of the node. Essential for debugging and testing.
+
+### Statement Interface
+
+- **Purpose**: Implemented by all nodes that are considered statements in the language.
+- **Method**: `statementNode()` - A marker method to categorize a node as a Statement.
+
+### Expression Interface
+
+- **Purpose**: Implemented by all nodes that are considered expressions.
+- **Method**: `expressionNode()` - A marker method to categorize a node as an Expression.
+
+### Program Class
+
+- **Purpose**: Acts as the root node of every AST. Represents a sequence of statements in a program.
+- **Fields**:
+  - `Statements`: A collection of statements (AST nodes implementing the Statement interface).
+
+### LetStatement Class
+
+- Represents a 'let' statement in the language.
+- Contains the `Token` object for 'let' and nodes for the variable name and value.
+
+### ReturnStatement Class
+
+- Represents a 'return' statement.
+- Contains the `Token` object for 'return' and a node for the return value.
+
+### ExpressionStatement Class
+
+- Wraps an expression as a statement.
+- Contains the `Token` object and a node representing the expression.
+
+### BlockStatement Class
+
+- Represents a block of statements enclosed in `{}`.
+- Contains a collection of statements.
+
+### Identifier Class
+
+- Represents an identifier used in the language.
+- Stores the `Token` object and the identifier value.
+
+### Boolean Class
+
+- Represents a boolean literal.
+- Stores the `Token` object and the boolean value.
+
+### IntegerLiteral Class
+
+- Represents an integer literal.
+- Stores the `Token` object and the integer value.
+
+### PrefixExpression Class
+
+- Represents a prefix expression (e.g., `!true`).
+- Contains the operator and the right-hand side expression.
+
+### InfixExpression Class
+
+- Represents an infix expression (e.g., `5 + 5`).
+- Contains the left-hand side expression, operator, and right-hand side expression.
+
+### IfExpression Class
+
+- Represents an 'if' conditional expression.
+- Contains the condition, consequence, and optional alternative block.
+
+### FunctionLiteral Class
+
+- Represents a function definition.
+- Contains parameters and the function body.
+
+### CallExpression Class
+
+- Represents a function call.
+- Contains the function identifier or literal and the arguments.
+
+### StringLiteral Class
+
+- Represents a string literal.
+- Contains the `Token` object and the string value.
+
+### ArrayLiteral Class
+
+- Represents an array literal.
+- Contains a list of elements (expressions).
+
+### IndexExpression Class
+
+- Represents an expression to access an element from an array or a hash.
+- Contains the left-hand side expression and the index expression.
+
+### HashLiteral Class
+
+- Represents a hash/map literal.
+- Stores pairs of keys and values.
+
+## Utility Functions
+
+### join Function
+
+- Used to concatenate strings with a given delimiter.
+- Essential for creating string representations of various nodes.
 
 ## Parser (Recursive Descent Pratt Parsing)
 
