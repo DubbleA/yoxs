@@ -52,14 +52,14 @@ class SamplePrograms(Resource):
         programs = mongo.db.sample_programs.find()
         return jsonify(programs=list(programs))
     
-@api.route('/find_specific_sample_program')
-class FindSpecificProgram(Resource):
+@api.route('/find_sample_program_by_ID')
+class FindSampleProgramByID(Resource):
     def get(self, programID):
         program = mongo.db.sample_programs.find({id: programID})
         return jsonify(program)
 
-@api.route('/delete_specific_sample_program')
-class DeleteSpecificSamplePrograms(Resource):
+@api.route('/delete_sample_program_by_ID')
+class DeleteSampleProgramByID(Resource):
     def get(self, programID):
         try:
             return mongo.db.sample_programs.deleteOne({id: programID})
