@@ -402,3 +402,62 @@ INFO:werkzeug: * Restarting with stat
 WARNING:werkzeug: * Debugger is active!
 INFO:werkzeug: * Debugger PIN: 158-623-628
 INFO:werkzeug:127.0.0.1 - - [22/Nov/2023 12:57:53] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:32] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:33] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:40] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:42] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 15:14:44] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 16:33:45] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 16:37:16] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 16:38:11] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [01/Dec/2023 16:40:14] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:18:38] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:18:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:18:46] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:18:55] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:18:58] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:03] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:11] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:22] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:25] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:30] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:37] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:43] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:47] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:19:57] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:32:33] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Dec/2023 12:32:39] "POST / HTTP/1.1" 200 -
