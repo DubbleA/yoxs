@@ -16,6 +16,9 @@ mongo = PyMongo(app)
 def inDatabase(programID):
     return mongo.db.sample_programs.fetch_one({id: programID})
 
+def inDatabase(programName):
+    return mongo.db.sample_programs.fetch_one({name: programName})
+
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
@@ -63,6 +66,20 @@ class DeleteSampleProgramByID(Resource):
     def get(self, programID):
         try:
             return mongo.db.sample_programs.deleteOne({id: programID})
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+        
+@api.route('/find_sample_program_by_name')
+class FindSampleProgramByName(Resource):
+    def get(self, programName):
+        program = mongo.db.sample_programs.find({name: programName})
+        return jsonify(program)
+
+@api.route('/delete_sample_program_by_name')
+class DeleteSampleProgramByName(Resource):
+    def get(self, programName):
+        try:
+            return mongo.db.sample_programs.deleteOne({name: programName})
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
 
