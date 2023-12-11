@@ -19,6 +19,15 @@ def inDatabase(programID):
 def inDatabase(programName):
     return mongo.db.sample_programs.fetch_one({name: programName})
 
+#Endpoint to Get a Single Sample Program by ID
+@api.route('/sample_program/<programID>')
+class GetSampleProgram(Resource):
+    def get(self, programID):
+        program = mongo.db.sample_programs.find_one({"_id": ObjectId(programID)})
+        if not program:
+            raise wz.NotFound("Program not found")
+        return jsonify(program)
+
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
