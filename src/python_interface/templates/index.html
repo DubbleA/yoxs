@@ -64,7 +64,7 @@
     <div class="module">
         <h1>Run Your Code</h1>
         
-        <label for="exampleCode">Choose an example program:</label> 
+        <label for="exampleCode">Choose an example program:</label>
         <select id="exampleCode" name="exampleCode" onchange="selectExample(this.value)">
             <option value="none" selected></option>
             {% for sample in code_samples %}
@@ -72,9 +72,12 @@
             {% endfor %}
         </select>
 
+        <!-- Ace Editor Container -->
+        <div id="editor" class="language-javascript"></div>
+
         <form method="POST">
-            <textarea id="codeInput" name="code" rows="10" cols="50" class="language-javascript">{{ code }}</textarea><br>
-            <button type="submit">Run Code</button>
+            <input type="hidden" name="code" id="hiddenCodeInput">
+            <button type="submit" onclick="updateCode()">Run Code</button>
         </form>
 
         {% if output %}
@@ -86,11 +89,25 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
         function selectExample(code) {
             var codeInput = document.getElementById('codeInput');
             codeInput.value = code;
             Prism.highlightAll();
+        }
+    </script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/javascript");
+
+        function selectExample(code) {
+            editor.setValue(code, -1); // -1 is used to move the cursor to the start
+        }
+
+        function updateCode() {
+            document.getElementById('hiddenCodeInput').value = editor.getValue();
         }
     </script>
 </body>
