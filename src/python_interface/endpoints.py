@@ -46,6 +46,31 @@ class UpdateSampleProgram(Resource):
             raise wz.NotFound("Program not found")
         return jsonify({"updated": result.modified_count > 0})
 
+#Endpoint to Delete a Sample Program by ID
+@api.route('/sample_program/<programID>')
+class DeleteSampleProgram(Resource):
+    def delete(self, programID):
+        result = mongo.db.sample_programs.delete_one({"_id": ObjectId(programID)})
+        if result.deleted_count == 0:
+            raise wz.NotFound("Program not found")
+        return jsonify({"deleted": True})
+
+#Endpoint to List All Sample Programs
+@api.route('/sample_programs')
+class ListSamplePrograms(Resource):
+    def get(self):
+        programs = mongo.db.sample_programs.find()
+        return jsonify(programs=[program for program in programs])
+
+#Endpoint to Find Sample Program by Name
+@api.route('/sample_programs/name/<programName>')
+class FindSampleProgramByName(Resource):
+    def get(self, programName):
+        program = mongo.db.sample_programs.find_one({"name": programName})
+        if not program:
+            raise wz.NotFound("Program not found")
+        return jsonify(program)
+
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
