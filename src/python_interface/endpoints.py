@@ -28,6 +28,24 @@ class GetSampleProgram(Resource):
             raise wz.NotFound("Program not found")
         return jsonify(program)
 
+#Endpoint to Create a New Sample Program
+@api.route('/sample_program')
+class CreateSampleProgram(Resource):
+    def post(self):
+        data = request.json
+        result = mongo.db.sample_programs.insert_one(data)
+        return jsonify({"_id": str(result.inserted_id)}), 201
+
+#Endpoint to Update a Sample Program by ID
+@api.route('/sample_program/<programID>')
+class UpdateSampleProgram(Resource):
+    def put(self, programID):
+        data = request.json
+        result = mongo.db.sample_programs.update_one({"_id": ObjectId(programID)}, {"$set": data})
+        if result.matched_count == 0:
+            raise wz.NotFound("Program not found")
+        return jsonify({"updated": result.modified_count > 0})
+
 @api.route('/tokenize')
 class Tokenize(Resource):
     def post(self):
