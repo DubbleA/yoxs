@@ -17,7 +17,7 @@ all: build tests
 build:
 	@echo "Build commands for monkey components"
 
-tests: token_test lexer_test ast_test parser_test object_test evaluator_test repl_test
+tests: token_test lexer_test ast_test parser_test object_test evaluator_test repl_test integration_test_p
 
 token_test:
 	$(CXX) $(CXXFLAGS) -I. $(TOKEN_DIR)/token_test.cpp $(TOKEN_DIR)/token.cpp -o token_test.out
@@ -46,6 +46,10 @@ evaluator_test:
 repl_test:
 	$(CXX) $(CXXFLAGS) -I. $(REPL_DIR)/repl_test.cpp $(REPL_DIR)/repl.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(PARSER_DIR)/parser.cpp $(AST_DIR)/ast.cpp $(EVALUATOR_DIR)/evaluator.cpp $(OBJECT_DIR)/environment.cpp $(OBJECT_DIR)/object.cpp -o repl_test.out
 	./repl_test.out
+
+integration_test_p:
+	$(CXX) $(CXXFLAGS) -I. integration_test_p.cpp $(LEXER_DIR)/lexer.cpp $(TOKEN_DIR)/token.cpp $(PARSER_DIR)/parser.cpp $(AST_DIR)/ast.cpp $(OBJECT_DIR)/object.cpp $(EVALUATOR_DIR)/evaluator.cpp $(OBJECT_DIR)/environment.cpp -o integration_test_p.out
+	./integration_test_p.out
 
 clean:
 	rm -f *.out *.o
