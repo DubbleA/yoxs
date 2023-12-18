@@ -34,7 +34,21 @@ compile_response_model = api.model('CompileResponse', {
     'output': fields.String(description='Output of the compiled code'),
     'execution_time': fields.Float(description='Execution time in seconds')
 })
+HELLO_EP = '/hello'
+HELLO_RESP = 'hello'
 
+@ns.route(HELLO_EP)
+class HelloWorld(Resource):
+    """
+    The purpose of the HelloWorld class is to have a simple test to see if the
+    app is working at all.
+    """
+    def get(self):
+        """
+        A trivial endpoint to see if the server is running.
+        It just answers with "hello world."
+        """
+        return {HELLO_RESP: 'world'}
 
 # Define API endpoints
 @ns.route('/db_content')
