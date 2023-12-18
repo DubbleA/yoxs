@@ -3,12 +3,14 @@ from flask_pymongo import PyMongo
 import logging
 import time
 import subprocess
-
+import os
 from data.db_connect import get_mongo_uri
 
 app = Flask(__name__)
 
-app.config["MONGO_URI"] = get_mongo_uri()
+#app.config["MONGO_URI"] = get_mongo_uri()
+app.config["MONGO_URI"] = os.environ.get('MONGO_URI_CLOUD')
+
 mongo = PyMongo(app)
 
 logging.basicConfig(filename='app.log', level=logging.INFO)
@@ -57,5 +59,5 @@ def remove_sample(sample_id):
     mongo.db.samples.delete_one({'_id': sample_id})
     return redirect(url_for('index'))
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)

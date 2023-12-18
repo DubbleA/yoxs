@@ -1208,3 +1208,35 @@ INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 15:44:54] "[36mGET /swaggerui/droid-sa
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 15:44:54] "GET /swaggerui/swagger-ui-bundle.js HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 15:44:54] "GET /swagger.json HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 15:45:30] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "[36mGET /swaggerui/swagger-ui.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "[36mGET /swaggerui/droid-sans.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "[36mGET /swaggerui/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "GET /swaggerui/swagger-ui-bundle.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:02] "GET /swagger.json HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:11] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:13] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:27] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:30] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:39] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:39] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:39] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:16:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:23:18] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:31:07] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
