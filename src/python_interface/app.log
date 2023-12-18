@@ -1240,3 +1240,29 @@ INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_inter
 INFO:werkzeug: * Restarting with stat
 WARNING:werkzeug: * Debugger is active!
 INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:43:14] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 18:43:15] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug: * Detected change in '/Users/nlmb/Documents/yoxs/src/python_interface/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
