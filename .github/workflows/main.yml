@@ -2,7 +2,8 @@ name: C++ CI/CD
 
 on:
   push:
-    branches: [ master ]
+    #branches: [ master ]
+    branches-ignore: [] # Runs on push to any branch
   pull_request:
     branches: [ master ]
   workflow_dispatch:
