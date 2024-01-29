@@ -1479,3 +1479,8 @@ INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 20:56:47] "GET /code/server_time HTTP/1
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 20:56:48] "GET /code/server_time HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 20:56:48] "GET /code/server_time HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 20:56:49] "GET /code/server_time HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 22:20:23] "[36mGET /swaggerui/droid-sans.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 22:20:23] "[36mGET /swaggerui/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 22:20:23] "[36mGET /swaggerui/swagger-ui.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 22:20:23] "GET /swaggerui/swagger-ui-bundle.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [18/Dec/2023 22:20:23] "GET /swagger.json HTTP/1.1" 200 -
