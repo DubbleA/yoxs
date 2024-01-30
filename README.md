@@ -6,6 +6,10 @@ The interpreter utilizes a 3 stage (Lexical Analysis, Abstract-Syntax-Tree Const
 
 In addition to the interpreter, there is an API Server with 10+ REST Endpoints connected to a front-end visualizer where users can see the under the hood process of how an interpreter functions. Users can input their own code or pick one of the sampleprograms hosted in MongoDB.
 
+## Progress & Goals
+
+[Link to documentation](ProgressAndGoals.md)
+
 ## File Structure
 
 The project separates individual components with the structure of:
