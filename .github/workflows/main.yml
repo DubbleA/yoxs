@@ -47,7 +47,6 @@ jobs:
 
     # Add a deployment step
     - name: Deploy to PythonAnywhere
-      if: success() # This ensures deployment runs only if all previous steps were successful
       uses: appleboy/ssh-action@master
       with:
         host: 'ssh.pythonanywhere.com'
@@ -55,6 +54,16 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /home/ag7432/yoxs/src/python_interface
-          git pull
-          source /home/ag7432/.virtualenvs/myvirtualenv/bin/activate
-          # Add any additional commands needed for your deployment
+          touch test_github_actions.txt
+          echo "Test file created" > test_github_actions.txt
+    # - name: Deploy to PythonAnywhere
+    #   if: success() # This ensures deployment runs only if all previous steps were successful
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: 'ssh.pythonanywhere.com'
+    #     username: 'ag7432'
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     script: |
+    #       cd /home/ag7432/yoxs/src/python_interface
+    #       git pull
+    #       source /home/ag7432/.virtualenvs/myvirtualenv/bin/activate
