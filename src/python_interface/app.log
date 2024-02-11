@@ -1497,3 +1497,17 @@ INFO:werkzeug:127.0.0.1 - - [30/Jan/2024 07:09:43] "POST / HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [30/Jan/2024 07:09:49] "GET / HTTP/1.1" 200 -
 INFO:root:Executing code
 INFO:werkzeug:127.0.0.1 - - [30/Jan/2024 07:09:53] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 610-329-628
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:43] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:43] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:46] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:54] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:56] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:12:03] "GET / HTTP/1.1" 200 -

@@ -10,6 +10,10 @@ In addition to the interpreter, there is an API Server with 10+ REST Endpoints c
 
 [Link to documentation](ProgressAndGoals.md)
 
+## Front End Repo
+
+[Link to repo](https://github.com/vokpe/yoxs-frontend/tree/main)
+
 ## File Structure
 
 The project separates individual components with the structure of:
