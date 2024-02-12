@@ -13,6 +13,7 @@ int main() {
 }
 //g++ -std=c++17 -I. -o monkey_repl main.cpp repl/repl.cpp object/object.cpp object/environment.cpp lexer/lexer.cpp parser/parser.cpp evaluator/evaluator.cpp ast/ast.cpp token/token.cpp && ./monkey_repl
 
+//g++ -std=c++17 -I. -o monkey_repl src/monkey/main.cpp src/monkey/repl/repl.cpp src/monkey/object/object.cpp src/monkey/object/environment.cpp src/monkey/lexer/lexer.cpp src/monkey/parser/parser.cpp src/monkey/evaluator/evaluator.cpp src/monkey/ast/ast.cpp src/monkey/token/token.cpp && ./monkey_repl
 
 /*
 Feel free to type in commands
