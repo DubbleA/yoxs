@@ -5,6 +5,8 @@ import logging
 import time
 import subprocess
 from data.db_connect import get_mongo_uri, connect_db
+import os
+
 
 # Initialize Flask and Flask-RESTx
 app = Flask(__name__)
@@ -464,4 +466,6 @@ def run_custom_compiler(code):
     return output, execution_time
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable from Heroku, default to 5000 if not found
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
