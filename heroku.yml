@@ -3,4 +3,4 @@ build:
     web: Dockerfile
 
 run:
-  web: gunicorn src.python_interface.endpoints:app
+  web: gunicorn --bind 0.0.0.0:$PORT endpoints:app
