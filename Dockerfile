@@ -1,11 +1,9 @@
-# Use an official Python runtime as a parent image
 FROM python:3.8-slim
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy the current directory contents into the container at /usr/src/app
-# Adjust the path according to where your code and requirements.txt are located
+# Copy the requirements file into the container
 COPY src/python_interface/requirements.txt .
 
 # Install any needed packages specified in requirements.txt
@@ -20,5 +18,5 @@ EXPOSE 8000
 # Define environment variable
 ENV NAME World
 
-# Command to run the application
-CMD ["python3", "endpoints.py"]
+# Run the Flask application
+CMD ["gunicorn", "endpoints:app"]
