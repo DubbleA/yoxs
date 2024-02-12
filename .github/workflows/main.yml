@@ -45,25 +45,17 @@ jobs:
     - name: Run all tests
       run: make -C src/monkey tests
 
-    # Add a deployment step
-    - name: Deploy to PythonAnywhere
-      uses: appleboy/ssh-action@master
+  deploy-to-heroku:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Login to Heroku Container Registry
+      uses: akhileshns/heroku-deploy@v3.12.12 # This action allows deploying Docker containers as well
       with:
-        host: 'ssh.pythonanywhere.com'
-        username: 'ag7432'
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/ag7432/yoxs/src/python_interface
-          touch test_github_actions.txt
-          echo "Test file created" > test_github_actions.txt
-    # - name: Deploy to PythonAnywhere
-    #   if: success() # This ensures deployment runs only if all previous steps were successful
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: 'ssh.pythonanywhere.com'
-    #     username: 'ag7432'
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     script: |
-    #       cd /home/ag7432/yoxs/src/python_interface
-    #       git pull
-    #       source /home/ag7432/.virtualenvs/myvirtualenv/bin/activate
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "yoxs"
+        heroku_email: "yams@nyu.edu"
+        usedocker: true

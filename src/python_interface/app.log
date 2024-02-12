@@ -1511,3 +1511,19 @@ INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:54] "GET / HTTP/1.1" 200 -
 INFO:root:Executing code
 INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:11:56] "POST / HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [09/Feb/2024 13:12:03] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 610-329-628
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/swagger-ui.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/droid-sans.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/swagger-ui-bundle.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swagger.json HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/favicon-32x32.png HTTP/1.1" 200 -
+INFO:root:Executing code
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:17] "POST /code/compile HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:32:02] "GET /code/db_content HTTP/1.1" 200 -
