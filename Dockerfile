@@ -19,4 +19,4 @@ EXPOSE 8000
 ENV NAME World
 
 # Run the Flask application
-CMD ["gunicorn", "endpoints:app"]
+CMD ["gunicorn", "--pythonpath", "src/python_interface", "endpoints:app"]
