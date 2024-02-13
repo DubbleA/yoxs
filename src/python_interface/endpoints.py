@@ -172,31 +172,31 @@ class Code(Resource):
 
 #ENDPOINT #5 Delete sample program name by MongoDB ObjectID
 
-    @ns.doc('delete_code', description='Delete a specific code')  # Custom description for DELETE
-    def delete(self, sample_id):
-        """
-        Delete Code by ID
+    # @ns.doc('delete_code', description='Delete a specific code')  # Custom description for DELETE
+    # def delete(self, sample_id):
+    #     """
+    #     Delete Code by ID
 
-        Deletes a specific code sample based on its MongoDB ObjectID.
+    #     Deletes a specific code sample based on its MongoDB ObjectID.
 
-        Path Parameters:
-            sample_id: The MongoDB ObjectID of the code sample to delete.
+    #     Path Parameters:
+    #         sample_id: The MongoDB ObjectID of the code sample to delete.
 
-        Responses:
-            204: No Content - Code sample successfully deleted.
-            400: Bad Request - If the ObjectID is invalid.
-            404: Not Found - If no code sample with the given ID is found.
-        """
-        try:
-            oid = ObjectId(sample_id)
-            return {'result': 'code deleted'}, 204
-        except:
-            api.abort(400, "Invalid ObjectId format")
+    #     Responses:
+    #         204: No Content - Code sample successfully deleted.
+    #         400: Bad Request - If the ObjectID is invalid.
+    #         404: Not Found - If no code sample with the given ID is found.
+    #     """
+    #     try:
+    #         oid = ObjectId(sample_id)
+    #         return {'result': 'code deleted'}, 204
+    #     except:
+    #         api.abort(400, "Invalid ObjectId format")
 
-        result = mongo.db.samples.delete_one({'_id': oid})
-        if result.deleted_count == 0:
-            api.abort(404, 'Sample not found')
-        return {'result': 'code deleted'}, 204
+    #     result = mongo.db.samples.delete_one({'_id': oid})
+    #     if result.deleted_count == 0:
+    #         api.abort(404, 'Sample not found')
+    #     return {'result': 'code deleted'}, 204
 
 #ENDPOINT #6 Compile program using custom code input and print output
 
@@ -411,25 +411,25 @@ class RandomSample(Resource):
 
 #ENDPOINT #12: Delete All Samples
 
-@ns.route('/delete_all')
-class DeleteAllSamples(Resource):
-    """
-    DeleteAllSamples Endpoint
+# @ns.route('/delete_all')
+# class DeleteAllSamples(Resource):
+#     """
+#     DeleteAllSamples Endpoint
 
-    This endpoint deletes all code samples from the database.
-    """
-    @ns.doc('delete_all_samples', description='Delete all sample programs')
-    def delete(self):
-        """
-        Delete All Samples
+#     This endpoint deletes all code samples from the database.
+#     """
+#     @ns.doc('delete_all_samples', description='Delete all sample programs')
+#     def delete(self):
+#         """
+#         Delete All Samples
 
-        Removes all code samples from the database.
+#         Removes all code samples from the database.
 
-        Responses:
-            204: No Content - All code samples successfully deleted.
-        """
-        mongo.db.samples.delete_many({})
-        return {'result': 'all samples deleted'}, 204
+#         Responses:
+#             204: No Content - All code samples successfully deleted.
+#         """
+#         mongo.db.samples.delete_many({})
+#         return {'result': 'all samples deleted'}, 204
 from datetime import datetime
 
 # New endpoint for getting the current server time
