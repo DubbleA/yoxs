@@ -1527,3 +1527,69 @@ INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:10] "GET /swaggerui/favicon-32x32
 INFO:root:Executing code
 INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:31:17] "POST /code/compile HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [12/Feb/2024 16:32:02] "GET /code/db_content HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:36:46] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:36:47] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:40] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:root:Executing code
+ERROR:root:Execution failed: [Errno 2] No such file or directory: './monkey_repl'
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:44] "POST / HTTP/1.1" 200 -
+INFO:root:Executing code
+ERROR:root:Execution failed: [Errno 2] No such file or directory: './monkey_repl'
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:48] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:51] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+ERROR:root:Execution failed: [Errno 2] No such file or directory: './monkey_repl'
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:53] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:39:56] "GET / HTTP/1.1" 200 -
+INFO:root:Executing code
+ERROR:root:Execution failed: [Errno 2] No such file or directory: './monkey_repl'
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:40:00] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.66:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 158-623-628
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swaggerui/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swaggerui/droid-sans.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swaggerui/swagger-ui.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swaggerui/swagger-ui-bundle.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swagger.json HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:41:22] "GET /swaggerui/favicon-32x32.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:34] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:34] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:36] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:36] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:37] "GET /code/hello HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Mar/2024 22:45:37] "GET /code/hello HTTP/1.1" 200 -
