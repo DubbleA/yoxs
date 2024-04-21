@@ -18,6 +18,9 @@ api = Api(app, version='1.0', title='MonkeyIDE API', description='A simple API f
 app.config["MONGO_URI"] = get_mongo_uri()
 mongo = PyMongo(app)
 
+# Secret Key for Authentication
+app.config['SECRET_KEY'] = 'developer_secret_key_authentication'
+
 # Logging configuration
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
@@ -445,6 +448,34 @@ class ServerTime(Resource):
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return {'server_time': current_time}
 
+from functools import wraps
+import jwt
+
+#Function to check for valid API Keys
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return {'message': 'Token is missing'}, 401
+        
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        except:
+            return {'message': 'Token is invalid'}, 401
+        return f(*args, **kwargs)
+    return decorated
+
+def generate_token():
+    auth = request.authorization
+    if not auth:
+        return {'message': 'Invalid authorization'}, 401
+    token = jwt.encode({'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
+    return token.decode('UTF-8'), 200
+
+
+
+    
 # Helper function
 def run_custom_compiler(code):
     logging.info("Executing code")
