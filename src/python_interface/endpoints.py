@@ -473,18 +473,7 @@ def generate_token():
     token = jwt.encode({'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
     return token.decode('UTF-8'), 200
 
-# Developer endpoint
-@ns.route("/dev_endpoint")
-@token_required
-class dev_endpoint(Resource):
 
-    @ns.doc('dev_endpoint', description='Tool to assist developers')
-    def get(self):
-        """
-        Logs that the endpoint was successfully accessed by a developer.
-        """
-        logging.info("Developer endpoint accessed")
-        return "Success"
 
     
 # Helper function
