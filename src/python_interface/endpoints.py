@@ -21,6 +21,9 @@ mongo = PyMongo(app)
 # Secret Key for Authentication
 # app.config['SECRET_KEY'] = 'developer_secret_key_authentication'
 
+# Error Log Configuration
+logging.basicConfig(filename='error.log', level=logging.ERROR)
+
 # Logging configuration
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
@@ -476,19 +479,18 @@ class ServerTime(Resource):
 #    return token.decode('UTF-8'), 200
 
 # Developer endpoint
-# @ns.route("/dev_endpoint")
+@ns.route("/dev_endpoint")
 # @token_required
-# class dev_endpoint(Resource):
+class DevEndpoint(Resource):
 
-#    @ns.doc('dev_endpoint', description='Tool to assist developers')
-#    def get(self):
-#        """
-#        Logs that the endpoint was successfully accessed by a developer.
-#        """
-#        logging.info("Developer endpoint accessed")
-#        return "Success"
-
-    
+    @ns.doc('dev_error_log_endpoint', description='Tool to assist developers check error logs')
+    def get(self):
+        """
+        Lets developer check for error logs to help debug code.
+        """
+        with open('error.log', 'r') as log_file:
+            error_logs = log_file.readlines()
+        return {'error_logs': error_logs}
 
 
 # Helper function
