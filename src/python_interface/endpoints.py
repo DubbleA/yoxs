@@ -479,7 +479,7 @@ class ServerTime(Resource):
 #    return token.decode('UTF-8'), 200
 
 # Developer endpoint
-@ns.route("/dev_endpoint")
+@ns.route("/dev_error_endpoint")
 # @token_required
 class DevEndpoint(Resource):
 
@@ -488,9 +488,23 @@ class DevEndpoint(Resource):
         """
         Lets developer check for error logs to help debug code.
         """
-        with open('app.log', 'r') as log_file:
+        with open('error.log', 'r') as log_file:
             error_logs = log_file.readlines()
         return {'error_logs': error_logs}
+
+# Developer endpoint
+@ns.route("/dev_app_endpoint")
+# @token_required
+class DevEndpoint(Resource):
+
+    @ns.doc('dev_app_log_endpoint', description='Tool to assist developers check app logs')
+    def get(self):
+        """
+        Lets developer check for app logs to help debug code.
+        """
+        with open('app.log', 'r') as log_file:
+            app_logs = log_file.readlines()
+        return {'app_logs': app_logs}
 
 from flask import jsonify
 
