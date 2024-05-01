@@ -180,31 +180,31 @@ class Code(Resource):
 
 #ENDPOINT #5 Delete sample program name by MongoDB ObjectID
 
-    # @ns.doc('delete_code', description='Delete a specific code')  # Custom description for DELETE
-    # def delete(self, sample_id):
-    #     """
-    #     Delete Code by ID
+    @ns.doc('delete_code', description='Delete a specific code')  # Custom description for DELETE
+    def delete(self, sample_id):
+        """
+        Delete Code by ID
 
-    #     Deletes a specific code sample based on its MongoDB ObjectID.
+        Deletes a specific code sample based on its MongoDB ObjectID.
 
-    #     Path Parameters:
-    #         sample_id: The MongoDB ObjectID of the code sample to delete.
+        Path Parameters:
+            sample_id: The MongoDB ObjectID of the code sample to delete.
 
-    #     Responses:
-    #         204: No Content - Code sample successfully deleted.
-    #         400: Bad Request - If the ObjectID is invalid.
-    #         404: Not Found - If no code sample with the given ID is found.
-    #     """
-    #     try:
-    #         oid = ObjectId(sample_id)
-    #         return {'result': 'code deleted'}, 204
-    #     except:
-    #         api.abort(400, "Invalid ObjectId format")
+        Responses:
+            204: No Content - Code sample successfully deleted.
+            400: Bad Request - If the ObjectID is invalid.
+            404: Not Found - If no code sample with the given ID is found.
+        """
+        try:
+            oid = ObjectId(sample_id)
+            return {'result': 'code deleted'}, 204
+        except:
+            api.abort(400, "Invalid ObjectId format")
 
-    #     result = mongo.db.samples.delete_one({'_id': oid})
-    #     if result.deleted_count == 0:
-    #         api.abort(404, 'Sample not found')
-    #     return {'result': 'code deleted'}, 204
+        result = mongo.db.samples.delete_one({'_id': oid})
+        if result.deleted_count == 0:
+            api.abort(404, 'Sample not found')
+        return {'result': 'code deleted'}, 204
 
 #ENDPOINT #6 Compile program using custom code input and print output
 
@@ -492,6 +492,40 @@ class DevEndpoint(Resource):
             error_logs = log_file.readlines()
         return {'error_logs': error_logs}
 
+from flask import jsonify
+
+@ns.route('/config')
+class ConfigManagement(Resource):
+    @ns.doc('get_config', description='View current configuration settings')
+    def get(self):
+        """
+        Get Configurations
+
+        Retrieves the current configuration settings of the application.
+        """
+        return jsonify(app.config)
+
+    @ns.expect(api.model('ConfigUpdate', {
+        'setting': fields.String(required=True, description='Configuration setting to update'),
+        'value': fields.Raw(required=True, description='New value for the setting')
+    }))
+    @ns.doc('update_config', description='Update a configuration setting')
+    def put(self):
+        """
+        Update Configuration
+
+        Updates a specified configuration setting with a new value.
+        """
+        config_data = request.json
+        setting = config_data['setting']
+        value = config_data['value']
+
+        # Check if the setting exists
+        if setting in app.config:
+            app.config[setting] = value
+            return {'message': f'Configuration {setting} updated to {value}'}, 200
+        else:
+            return {'message': 'Configuration setting not found'}, 404
 
 # Helper function
 def run_custom_compiler(code):
