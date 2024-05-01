@@ -488,7 +488,7 @@ class DevEndpoint(Resource):
         """
         Lets developer check for error logs to help debug code.
         """
-        with open('error.log', 'r') as log_file:
+        with open('app.log', 'r') as log_file:
             error_logs = log_file.readlines()
         return {'error_logs': error_logs}
 
